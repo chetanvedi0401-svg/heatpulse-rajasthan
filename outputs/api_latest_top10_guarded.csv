@@ -1,0 +1,11 @@
+date,district,rain_mm,tmax_c,tmin_c,tavg_c,heat_stress_score,pred_prob_critical_t1,pred_critical_t1,risk_score_next_day,alert_level_next_day,rank_within_date,pipeline_mode,aqi_status,confidence_tag,recommended_action
+2026-04-30,Pali,0.0,41.5,28.5,35.0,48.79223674444444,0.9997880986652256,1,66.70753733717177,RED,1,Heat-only,excluded,High,Emergency heat-health action
+2026-04-30,Kota,0.0,42.0,29.0,35.5,45.53366571111111,0.9997797945104817,1,64.58917552008909,RED,2,Heat-only,excluded,High,Emergency heat-health action
+2026-04-30,Bundi,0.0,42.1,28.1,35.1,44.238374066666694,0.9997493920452722,1,63.74617186491788,ORANGE,3,Heat-only,excluded,High,Heat-health preparedness activation
+2026-04-30,Jhalawar,0.0,41.2,29.0,35.1,40.67373346666669,0.9991707909094104,1,61.40890443516271,YELLOW,4,Heat-only,excluded,High,Targeted surveillance + advisories
+2026-04-30,Bikaner,0.0,42.0,26.5,34.25,40.32127456666663,0.9994821464617301,1,61.190703594493854,YELLOW,5,Heat-only,excluded,High,Targeted surveillance + advisories
+2026-04-30,Barmer,0.0,42.2,26.2,34.2,39.10760066666669,0.9986182855270115,1,60.371580426778756,YELLOW,6,Heat-only,excluded,High,Targeted surveillance + advisories
+2026-04-30,Jaisalmer,0.0,41.7,27.6,34.650000000000006,38.38749303333333,0.9976612797088957,1,59.87001526147802,YELLOW,7,Heat-only,excluded,High,Targeted surveillance + advisories
+2026-04-30,Bhilwara,0.0,40.8,28.4,34.599999999999994,38.37378639999998,0.9969148108694861,1,59.834979540432,YELLOW,8,Heat-only,excluded,High,Targeted surveillance + advisories
+2026-04-30,Nagaur,0.0,41.7,25.0,33.35,34.0923387666667,0.9977950309751452,1,57.082846282463436,GREEN,9,Heat-only,excluded,High,Routine monitoring
+2026-04-30,Jodhpur,0.0,41.0,27.7,34.35,34.02297519999999,0.9951590452082072,1,56.94550046228725,GREEN,10,Heat-only,excluded,High,Routine monitoring

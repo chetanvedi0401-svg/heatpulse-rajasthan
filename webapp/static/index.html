@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HeatWatch Rajasthan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="bg-glow one"></div>
+  <div class="bg-glow two"></div>
+
+  <main class="app-shell">
+    <nav class="top-nav">
+      <div class="brand"><span>Heat</span>Watch Rajasthan</div>
+      <div class="nav-pills">
+        <span id="pill1" class="pill">Public Dashboard</span>
+        <span id="pill2" class="pill">Next-Day Risk</span>
+        <span id="pill3" class="pill">Decision Support</span>
+        <button id="langBtn" class="pill-btn">EN / HI</button>
+        <button id="fsBtn" class="pill-btn">Fullscreen</button>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-left">
+        <p id="heroKicker" class="kicker">Live Heat Intelligence</p>
+        <h1 id="heroTitle">District Heat Risk Command Center</h1>
+        <p id="forecastWindow" class="subtitle">Loading forecast window...</p>
+        <div id="mixChips" class="chips"></div>
+      </div>
+      <div class="hero-right">
+        <button id="refreshBtn" class="btn-primary">Refresh Data</button>
+        <a id="downloadDayBtn" class="btn-ghost" href="#">Download Day CSV</a>
+        <a id="downloadTopBtn" class="btn-ghost" href="/download/top10.csv">Download Top10 CSV</a>
+      </div>
+    </section>
+
+    <section class="controls card">
+      <div class="field">
+        <label for="districtSelect">District</label>
+        <select id="districtSelect"></select>
+      </div>
+      <div class="field">
+        <label for="dateSelect">Forecast Date</label>
+        <select id="dateSelect"></select>
+      </div>
+    </section>
+
+    <section class="metrics">
+      <article class="metric-card">
+        <p>Tmax (deg C)</p>
+        <h3 id="mTmax">-</h3>
+      </article>
+      <article class="metric-card">
+        <p>Tmin (deg C)</p>
+        <h3 id="mTmin">-</h3>
+      </article>
+      <article class="metric-card">
+        <p>Rain (mm)</p>
+        <h3 id="mRain">-</h3>
+      </article>
+      <article class="metric-card">
+        <p>Risk Score</p>
+        <h3 id="mRisk">-</h3>
+      </article>
+    </section>
+
+    <section class="grid-two">
+      <article class="card">
+        <h2 id="alertPanelTitle">Alert Panel</h2>
+        <div class="weather-face">
+          <div id="weatherIcon" class="weather-icon">☀️</div>
+          <div>
+            <div id="weatherTitle" class="weather-title">Heat Outlook</div>
+            <div id="weatherTag" class="weather-tag">Warm and dry conditions</div>
+          </div>
+        </div>
+        <div id="alertBadge" class="alert-badge">-</div>
+        <p><b id="labAction">Recommended Action:</b> <span id="actionText">-</span></p>
+        <p><b id="labProb">Critical Probability:</b> <span id="probText">-</span></p>
+        <p><b id="labConf">Confidence:</b> <span id="confText">-</span></p>
+        <p><b id="labRank">Rank Within Date:</b> <span id="rankText">-</span></p>
+        <div id="tipCard" class="tip-card">
+          <span class="tip-label">Health Tip</span>
+          <p id="tipText">Stay hydrated and avoid direct afternoon sun exposure.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2 id="mapTitle">Risk Map Snapshot</h2>
+        <div id="map"></div>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2 id="trendTitle">District Trend</h2>
+      <canvas id="trendChart" height="120"></canvas>
+    </section>
+
+    <section class="grid-two">
+      <article class="card">
+        <h2 id="topTitle">Top-10 Hotspots</h2>
+        <table id="topTable">
+          <thead>
+            <tr>
+              <th id="thRank">Rank</th><th id="thDistrict">District</th><th id="thAlert">Alert</th><th id="thRisk">Risk</th><th id="thTmax">Tmax</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </article>
+      <article class="card">
+        <h2 id="mixTitle">State Alert Mix</h2>
+        <canvas id="mixChart" height="150"></canvas>
+      </article>
+    </section>
+
+    <section class="grid-two">
+      <article class="card">
+        <h2 id="riserTitle">Fastest Rising Risk Districts</h2>
+        <table id="riserTable">
+          <thead>
+            <tr>
+              <th>District</th><th>Alert</th><th>Prev Risk</th><th>Current Risk</th><th>Delta</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </article>
+      <article class="card">
+        <h2 id="planTitle">Personal Safety Planner</h2>
+        <div class="plan-grid">
+          <div class="plan-box">
+            <span class="plan-label">Hydration Target</span>
+            <strong id="planHydration">-</strong>
+          </div>
+          <div class="plan-box">
+            <span class="plan-label">ORS Reminder</span>
+            <strong id="planOrs">-</strong>
+          </div>
+          <div class="plan-box">
+            <span class="plan-label">Outdoor Work Window</span>
+            <strong id="planWindow">-</strong>
+          </div>
+          <div class="plan-box">
+            <span class="plan-label">High-Risk Group</span>
+            <strong id="planRiskGroup">-</strong>
+          </div>
+        </div>
+        <p id="planSummary" class="plan-summary">-</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<svg width="1800" height="420" viewBox="0 0 1800 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fog" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#dbe7f6" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#dbe7f6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#dbe7f6" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="sand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#cdd9ea" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#cdd9ea" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="mono" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8eff8" stop-opacity="0.36"/>
+      <stop offset="100%" stop-color="#e8eff8" stop-opacity="0.22"/>
+    </linearGradient>
+    <style>
+      .sil { fill: url(#mono); }
+      .soft { fill: #e8eff8; fill-opacity: .22; }
+      .fine { stroke: #e8eff8; stroke-opacity: .35; stroke-width: 1; fill: none; }
+    </style>
+  </defs>
+
+  <!-- dunes -->
+  <path d="M0 336 C 220 292, 380 374, 600 332 C 780 298, 980 376, 1220 330 C 1400 294, 1570 358, 1800 322 L1800 420 L0 420 Z" fill="url(#sand)"/>
+  <path d="M0 362 C 280 328, 420 392, 680 350 C 940 312, 1100 390, 1370 346 C 1570 318, 1710 372, 1800 352 L1800 420 L0 420 Z" class="soft"/>
+
+  <!-- Amer fort hill silhouette -->
+  <g transform="translate(60,200)">
+    <path class="sil" d="M0 122 L255 122 L255 166 L0 166 Z"/>
+    <path class="sil" d="M22 92 L232 92 L232 122 L22 122 Z"/>
+    <path class="sil" d="M42 72 L212 72 L212 92 L42 92 Z"/>
+    <path class="fine" d="M0 120 C -20 98, -14 74, 10 56"/>
+    <path class="fine" d="M255 120 C 278 98, 272 74, 246 56"/>
+    <rect x="72" y="132" width="16" height="34" class="soft"/>
+    <rect x="110" y="132" width="16" height="34" class="soft"/>
+    <rect x="148" y="132" width="16" height="34" class="soft"/>
+  </g>
+
+  <!-- Hawa Mahal front -->
+  <g transform="translate(430,166)">
+    <path class="sil" d="M0 152 L340 152 L340 202 L0 202 Z"/>
+    <path class="sil" d="M18 116 L322 116 L322 152 L18 152 Z"/>
+    <path class="sil" d="M34 84 L306 84 L306 116 L34 116 Z"/>
+    <path class="sil" d="M52 58 L288 58 L288 84 L52 84 Z"/>
+    <path class="sil" d="M76 38 L264 38 L264 58 L76 58 Z"/>
+    <!-- jaali windows -->
+    <g class="fine">
+      <path d="M34 152 V116 M64 152 V116 M94 152 V116 M124 152 V116 M154 152 V116 M184 152 V116 M214 152 V116 M244 152 V116 M274 152 V116 M304 152 V116"/>
+      <path d="M48 116 V84 M78 116 V84 M108 116 V84 M138 116 V84 M168 116 V84 M198 116 V84 M228 116 V84 M258 116 V84 M288 116 V84"/>
+      <path d="M64 84 V58 M94 84 V58 M124 84 V58 M154 84 V58 M184 84 V58 M214 84 V58 M244 84 V58 M274 84 V58"/>
+      <path d="M90 58 V38 M120 58 V38 M150 58 V38 M180 58 V38 M210 58 V38 M240 58 V38"/>
+    </g>
+  </g>
+
+  <!-- Jal Mahal water body -->
+  <g transform="translate(860,228)">
+    <path class="sil" d="M0 52 L280 52 L280 96 L0 96 Z"/>
+    <path class="sil" d="M22 28 L258 28 L258 52 L22 52 Z"/>
+    <path class="fine" d="M140 28 A58 34 0 0 1 198 28 A58 34 0 0 1 82 28 A58 34 0 0 1 140 28"/>
+    <path class="fine" d="M-18 104 C 42 92, 86 112, 154 102 C 206 94, 250 112, 310 100"/>
+    <path class="fine" d="M-8 118 C 60 106, 100 126, 180 114 C 230 106, 268 122, 324 110"/>
+  </g>
+
+  <!-- City palace + minars -->
+  <g transform="translate(1180,190)">
+    <path class="sil" d="M0 118 L390 118 L390 170 L0 170 Z"/>
+    <path class="sil" d="M32 84 L358 84 L358 118 L32 118 Z"/>
+    <path class="sil" d="M74 58 L316 58 L316 84 L74 84 Z"/>
+    <path class="sil" d="M186 26 L210 26 L210 118 L186 118 Z"/>
+    <path class="sil" d="M146 44 L164 44 L164 118 L146 118 Z"/>
+    <path class="sil" d="M232 44 L250 44 L250 118 L232 118 Z"/>
+    <g class="fine">
+      <path d="M44 84 V66 M66 84 V66 M88 84 V66 M110 84 V66 M132 84 V66 M154 84 V66 M176 84 V66 M198 84 V66 M220 84 V66 M242 84 V66 M264 84 V66 M286 84 V66 M308 84 V66 M330 84 V66"/>
+      <path d="M18 170 V118 M62 170 V114 M106 170 V112 M150 170 V110 M194 170 V108 M238 170 V110 M282 170 V112 M326 170 V114 M370 170 V118"/>
+    </g>
+  </g>
+
+  <!-- Camel rider silhouettes -->
+  <g fill="#e8eff8" fill-opacity=".3">
+    <path d="M1310 354 q16 -16 34 0 q12 18 24 0 q8 -8 18 0 q-10 6 -18 10 q-8 8 -22 3 q-16 -3 -36 -13z"/>
+    <circle cx="1316" cy="338" r="4"/>
+    <path d="M1398 364 q11 -12 22 0 q8 11 16 0 q5 -7 10 0 q-5 4 -10 7 q-5 6 -12 2 q-11 -2 -26 -9z"/>
+  </g>
+
+  <!-- subtle birds -->
+  <g class="fine">
+    <path d="M1120 154 q10 -8 20 0"/>
+    <path d="M1138 146 q10 -8 20 0"/>
+    <path d="M1158 156 q10 -8 20 0"/>
+  </g>
+
+  <rect x="0" y="0" width="1800" height="420" fill="url(#fog)"/>
+</svg>
