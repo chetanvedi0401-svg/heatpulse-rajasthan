@@ -1,4 +1,4 @@
-const els = {
+﻿const els = {
   district: document.getElementById("districtSelect"),
   date: document.getElementById("dateSelect"),
   refresh: document.getElementById("refreshBtn"),
@@ -27,6 +27,13 @@ const els = {
   planWindow: document.getElementById("planWindow"),
   planRiskGroup: document.getElementById("planRiskGroup"),
   planSummary: document.getElementById("planSummary"),
+  simpleAlertTitle: document.getElementById("simpleAlertTitle"),
+  simpleAlertText: document.getElementById("simpleAlertText"),
+  simpleWindow: document.getElementById("simpleWindow"),
+  simpleHydration: document.getElementById("simpleHydration"),
+  simpleOrs: document.getElementById("simpleOrs"),
+  riskMeterFill: document.getElementById("riskMeterFill"),
+  riskMeterLabel: document.getElementById("riskMeterLabel"),
 };
 
 const labels = {
@@ -57,22 +64,25 @@ const labels = {
     fsOn: "Exit Fullscreen",
     fsOff: "Fullscreen",
     dayCsv: "Download Day CSV",
+    windowPrefix: "Safe Window:",
+    hydrationPrefix: "Water:",
+    orsPrefix: "ORS:",
   },
   hi: {
     heroKicker: "Live Heat Intelligence",
-    heroTitle: "Jila Heat Risk Command Center",
-    refresh: "Data Refresh",
+    heroTitle: "District Heat Risk Command Center",
+    refresh: "Refresh Data",
     alertPanelTitle: "Alert Panel",
     mapTitle: "Risk Map Snapshot",
     trendTitle: "District Trend",
     topTitle: "Top-10 Hotspots",
     mixTitle: "State Alert Mix",
-    riserTitle: "Tezi se badhte risk districts",
+    riserTitle: "Fastest Rising Risk Districts",
     planTitle: "Personal Safety Planner",
-    action: "Sujhaya gaya action:",
-    prob: "Critical probability:",
-    conf: "Vishwas star:",
-    rank: "Date ke andar rank:",
+    action: "Recommended Action:",
+    prob: "Critical Probability:",
+    conf: "Confidence:",
+    rank: "Rank Within Date:",
     pill1: "Public Dashboard",
     pill2: "Next-Day Risk",
     pill3: "Decision Support",
@@ -82,9 +92,12 @@ const labels = {
     thRisk: "Risk",
     thTmax: "Tmax",
     weatherTitle: "Heat Outlook",
-    fsOn: "Fullscreen Band",
+    fsOn: "Exit Fullscreen",
     fsOff: "Fullscreen",
-    dayCsv: "Day CSV Download",
+    dayCsv: "Download Day CSV",
+    windowPrefix: "Safe Window:",
+    hydrationPrefix: "Water:",
+    orsPrefix: "ORS:",
   },
 };
 
@@ -111,11 +124,11 @@ function alertColor(level) {
 }
 
 function weatherSymbol(tmax, rain, alert) {
-  if (alert === "RED") return "🔥";
-  if (rain >= 2) return "⛈️";
-  if (tmax >= 42) return "🌞";
-  if (tmax >= 38) return "☀️";
-  return "🌤️";
+  if (alert === "RED") return "HEAT";
+  if (rain >= 2) return "RAIN";
+  if (tmax >= 42) return "VERY HOT";
+  if (tmax >= 38) return "HOT";
+  return "MILD";
 }
 
 function weatherTag(tmax, rain, alert) {
@@ -131,6 +144,13 @@ function healthTip(alert) {
   if (alert === "ORANGE") return "Preparedness tip: carry water, cap, and schedule shaded rest breaks.";
   if (alert === "YELLOW") return "Advisory tip: increase fluids, especially for elderly and outdoor workers.";
   return "Routine tip: keep hydration steady and monitor local updates.";
+}
+
+function riskExplain(alert) {
+  if (alert === "RED") return "Very high heat risk. Avoid outdoor exposure except essential tasks.";
+  if (alert === "ORANGE") return "High risk. Limit outdoor exposure and take frequent breaks.";
+  if (alert === "YELLOW") return "Moderate risk. Increase hydration and rest intervals.";
+  return "Low risk. Routine precautions are sufficient.";
 }
 
 function safetyPlan(current) {
@@ -355,6 +375,25 @@ function renderPlanner(current) {
   els.planWindow.textContent = plan.window;
   els.planRiskGroup.textContent = plan.riskGroup;
   els.planSummary.textContent = plan.summary;
+
+  const t = labels[currentLang];
+  els.simpleWindow.textContent = `${t.windowPrefix} ${plan.window}`;
+  els.simpleHydration.textContent = `${t.hydrationPrefix} ${plan.hydration}`;
+  els.simpleOrs.textContent = `${t.orsPrefix} ${plan.ors}`;
+}
+
+function renderRiskMeter(riskScore) {
+  const maxRef = 70;
+  const pct = Math.max(0, Math.min(100, (riskScore / maxRef) * 100));
+  els.riskMeterFill.style.width = `${pct.toFixed(0)}%`;
+  els.riskMeterLabel.textContent = `${pct.toFixed(0)}%`;
+}
+
+function renderSimpleCards(current) {
+  const alert = (current.alert_level_next_day || "GREEN").toUpperCase();
+  els.simpleAlertTitle.textContent = alert;
+  els.simpleAlertTitle.style.color = alertColor(alert);
+  els.simpleAlertText.textContent = riskExplain(alert);
 }
 
 function renderCurrent(current) {
@@ -373,6 +412,9 @@ function renderCurrent(current) {
   els.weatherIcon.textContent = symbol;
   els.weatherTag.textContent = weatherTag(current.tmax_c, current.rain_mm, current.alert_level_next_day);
   els.tipText.textContent = healthTip(current.alert_level_next_day);
+
+  renderRiskMeter(current.risk_score_next_day);
+  renderSimpleCards(current);
   renderPlanner(current);
 }
 
@@ -383,6 +425,7 @@ async function loadSelection() {
     jget(`/api/district?district=${encodeURIComponent(district)}&date=${encodeURIComponent(date)}`),
     jget(`/api/day?date=${encodeURIComponent(date)}`),
   ]);
+
   renderCurrent(districtRes.current);
   renderTrend(districtRes.trend);
   renderMap(dayRes.items || []);
@@ -410,6 +453,9 @@ els.langBtn.addEventListener("click", () => {
   currentLang = currentLang === "en" ? "hi" : "en";
   applyLanguage();
   setFsButtonText();
+  renderPlanner({
+    tmax_c: Number.parseFloat(els.mTmax.textContent) || 0,
+  });
 });
 
 els.fsBtn.addEventListener("click", async () => {

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -53,11 +53,11 @@
 
     <section class="metrics">
       <article class="metric-card">
-        <p>Tmax (deg C)</p>
+        <p>Max Temp (deg C)</p>
         <h3 id="mTmax">-</h3>
       </article>
       <article class="metric-card">
-        <p>Tmin (deg C)</p>
+        <p>Min Temp (deg C)</p>
         <h3 id="mTmin">-</h3>
       </article>
       <article class="metric-card">
@@ -70,14 +70,41 @@
       </article>
     </section>
 
+    <section class="simple-strip">
+      <article class="simple-card">
+        <p class="simple-kicker">Today's Color Alert</p>
+        <h3 id="simpleAlertTitle">--</h3>
+        <p id="simpleAlertText">Local heat advisory will appear here.</p>
+      </article>
+      <article class="simple-card">
+        <p class="simple-kicker">Safe Outdoor Time</p>
+        <h3 id="simpleWindow">--</h3>
+        <p>Use extra caution during peak sun hours (11 AM - 4 PM).</p>
+      </article>
+      <article class="simple-card">
+        <p class="simple-kicker">Water + ORS Plan</p>
+        <h3 id="simpleHydration">--</h3>
+        <p id="simpleOrs">--</p>
+      </article>
+    </section>
+
     <section class="grid-two">
       <article class="card">
         <h2 id="alertPanelTitle">Alert Panel</h2>
         <div class="weather-face">
-          <div id="weatherIcon" class="weather-icon">☀️</div>
+          <div id="weatherIcon" class="weather-icon">SUN</div>
           <div>
             <div id="weatherTitle" class="weather-title">Heat Outlook</div>
             <div id="weatherTag" class="weather-tag">Warm and dry conditions</div>
+          </div>
+        </div>
+        <div class="risk-meter-wrap">
+          <div class="risk-meter-label">
+            <span>Risk Intensity</span>
+            <span id="riskMeterLabel">0%</span>
+          </div>
+          <div class="risk-meter-track">
+            <div id="riskMeterFill" class="risk-meter-fill"></div>
           </div>
         </div>
         <div id="alertBadge" class="alert-badge">-</div>
@@ -154,6 +181,22 @@
         </div>
         <p id="planSummary" class="plan-summary">-</p>
       </article>
+    </section>
+
+    <section class="card faq-card">
+      <h2>Common User Help</h2>
+      <details>
+        <summary>What does Green mean?</summary>
+        <p>Routine monitoring. Normal daily activity can continue with regular hydration.</p>
+      </details>
+      <details>
+        <summary>What is the difference between Yellow, Orange, and Red?</summary>
+        <p>Yellow: advisory. Orange: preparedness mode. Red: emergency heat-health action with minimal outdoor exposure.</p>
+      </details>
+      <details>
+        <summary>How is this prediction generated?</summary>
+        <p>Next-day risk is generated from district-level weather variables and a trained heat-risk model.</p>
+      </details>
     </section>
   </main>
 
