@@ -34,6 +34,14 @@
   simpleOrs: document.getElementById("simpleOrs"),
   riskMeterFill: document.getElementById("riskMeterFill"),
   riskMeterLabel: document.getElementById("riskMeterLabel"),
+  whyReason1: document.getElementById("whyReason1"),
+  whyReason2: document.getElementById("whyReason2"),
+  whyReason3: document.getElementById("whyReason3"),
+  whyPrevDate: document.getElementById("whyPrevDate"),
+  whyPrevRisk: document.getElementById("whyPrevRisk"),
+  whyDeltaRisk: document.getElementById("whyDeltaRisk"),
+  whyPrevAlert: document.getElementById("whyPrevAlert"),
+  whyConfidence: document.getElementById("whyConfidence"),
 };
 
 const labels = {
@@ -153,6 +161,64 @@ function riskExplain(alert) {
   return "Low risk. Routine precautions are sufficient.";
 }
 
+function confidenceExplain(tag) {
+  const x = String(tag || "").toUpperCase();
+  if (x === "HIGH") {
+    return "Confidence: High. Similar weather patterns were seen in training data.";
+  }
+  if (x === "MEDIUM") {
+    return "Confidence: Medium. Signal is strong but not extreme.";
+  }
+  return "Confidence: Low. Treat this as advisory and monitor updates.";
+}
+
+function buildWhyReasons(current, comparison) {
+  const reasons = [];
+  const probPct = (current.pred_prob_critical_t1 || 0) * 100;
+  const heatStress = current.heat_stress_score || 0;
+  const tmax = current.tmax_c || 0;
+  const rain = current.rain_mm || 0;
+  const delta = comparison?.risk_delta ?? null;
+
+  if (probPct >= 90) {
+    reasons.push(`Model critical probability is very high at ${probPct.toFixed(1)}%.`);
+  } else if (probPct >= 75) {
+    reasons.push(`Model critical probability is elevated at ${probPct.toFixed(1)}%.`);
+  } else if (probPct >= 55) {
+    reasons.push(`Model indicates moderate critical probability at ${probPct.toFixed(1)}%.`);
+  }
+
+  if (heatStress >= 50) {
+    reasons.push(`Heat stress score is high (${heatStress.toFixed(1)}), increasing health risk.`);
+  } else if (heatStress >= 35) {
+    reasons.push(`Heat stress score is moderate (${heatStress.toFixed(1)}).`);
+  }
+
+  if (tmax >= 42) {
+    reasons.push(`Maximum temperature is extreme at ${tmax.toFixed(1)} deg C.`);
+  } else if (tmax >= 39) {
+    reasons.push(`Maximum temperature is high at ${tmax.toFixed(1)} deg C.`);
+  }
+
+  if (rain <= 0.1) {
+    reasons.push("No meaningful rainfall support is expected, so cooling relief is limited.");
+  }
+
+  if (delta !== null) {
+    if (delta >= 5) {
+      reasons.push(`Risk increased sharply by ${delta.toFixed(2)} vs previous date.`);
+    } else if (delta <= -5) {
+      reasons.push(`Risk dropped by ${Math.abs(delta).toFixed(2)} vs previous date.`);
+    }
+  }
+
+  reasons.push(
+    "Final alert color follows policy thresholds using risk score, model probability, and guardrail balancing."
+  );
+
+  return reasons.slice(0, 3);
+}
+
 function safetyPlan(current) {
   const tmax = current.tmax_c || 0;
   if (tmax >= 43) {
@@ -222,6 +288,7 @@ function applyLanguage() {
   setText("thTmax", t.thTmax);
   setText("weatherTitle", t.weatherTitle);
   setText("downloadDayBtn", t.dayCsv);
+  setText("whyTitle", "Why This Alert?");
 }
 
 function setFsButtonText() {
@@ -396,7 +463,31 @@ function renderSimpleCards(current) {
   els.simpleAlertText.textContent = riskExplain(alert);
 }
 
-function renderCurrent(current) {
+function renderWhyPanel(current, comparison) {
+  const reasons = buildWhyReasons(current, comparison);
+  els.whyReason1.textContent = reasons[0] || "-";
+  els.whyReason2.textContent = reasons[1] || "-";
+  els.whyReason3.textContent = reasons[2] || "-";
+
+  els.whyPrevDate.textContent = comparison?.previous_date || "-";
+  els.whyPrevRisk.textContent =
+    comparison?.previous_risk_score === null || comparison?.previous_risk_score === undefined
+      ? "-"
+      : Number(comparison.previous_risk_score).toFixed(2);
+
+  if (comparison?.risk_delta === null || comparison?.risk_delta === undefined) {
+    els.whyDeltaRisk.textContent = "-";
+  } else {
+    const d = Number(comparison.risk_delta);
+    const sign = d > 0 ? "+" : "";
+    els.whyDeltaRisk.textContent = `${sign}${d.toFixed(2)}`;
+  }
+
+  els.whyPrevAlert.textContent = comparison?.previous_alert_level || "-";
+  els.whyConfidence.textContent = confidenceExplain(current.confidence_tag);
+}
+
+function renderCurrent(current, comparison) {
   els.mTmax.textContent = current.tmax_c.toFixed(1);
   els.mTmin.textContent = current.tmin_c.toFixed(1);
   els.mRain.textContent = current.rain_mm.toFixed(1);
@@ -416,6 +507,7 @@ function renderCurrent(current) {
   renderRiskMeter(current.risk_score_next_day);
   renderSimpleCards(current);
   renderPlanner(current);
+  renderWhyPanel(current, comparison);
 }
 
 async function loadSelection() {
@@ -426,7 +518,7 @@ async function loadSelection() {
     jget(`/api/day?date=${encodeURIComponent(date)}`),
   ]);
 
-  renderCurrent(districtRes.current);
+  renderCurrent(districtRes.current, districtRes.comparison || null);
   renderTrend(districtRes.trend);
   renderMap(dayRes.items || []);
   renderMixChart(dayRes.alert_mix || {});
