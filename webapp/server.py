@@ -164,6 +164,24 @@ def api_district():
         for _, r in trend_df.iterrows()
     ]
 
+    comparison = {
+        "previous_date": "",
+        "previous_alert_level": "",
+        "previous_risk_score": None,
+        "risk_delta": None,
+    }
+    prev_df = trend_df[trend_df["date"] < row["date"]]
+    if not prev_df.empty:
+        prev_row = prev_df.iloc[-1]
+        prev_risk = _safe_float(prev_row["risk_score_next_day"])
+        curr_risk = _safe_float(row["risk_score_next_day"])
+        comparison = {
+            "previous_date": str(pd.to_datetime(prev_row["date"]).date()),
+            "previous_alert_level": prev_row["alert_level_next_day"],
+            "previous_risk_score": prev_risk,
+            "risk_delta": curr_risk - prev_risk,
+        }
+
     return jsonify(
         {
             "district": district,
@@ -177,9 +195,11 @@ def api_district():
                 "alert_level_next_day": row["alert_level_next_day"],
                 "recommended_action": row["recommended_action"],
                 "confidence_tag": row.get("confidence_tag", ""),
+                "heat_stress_score": _safe_float(row.get("heat_stress_score", 0)),
                 "rank_within_date": int(row["rank_within_date"]),
             },
             "trend": trend,
+            "comparison": comparison,
         }
     )
 
