@@ -368,22 +368,32 @@ def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_f
     guarded = live_out.copy()
 
     if red_pct > 40:
-        q_y = float(guarded["risk_score_next_day"].quantile(0.65))
-        q_o = float(guarded["risk_score_next_day"].quantile(0.85))
-        q_r = float(guarded["risk_score_next_day"].quantile(0.95))
-
-        def rebalance_alert(prob, score):
-            if prob >= 0.95 and score >= q_r:
+        # Rebalance per forecast date so one hot day does not force all other days to GREEN.
+        # Absolute score floors keep moderate-risk days visible in YELLOW/ORANGE buckets.
+        def rebalance_alert(prob, score, q_y, q_o, q_r):
+            if (prob >= 0.92 and score >= max(q_r, 58.0)) or (score >= 78.0):
                 return "RED"
-            if prob >= 0.80 and score >= q_o:
+            if (prob >= 0.78 and score >= max(q_o, 48.0)) or (score >= 65.0):
                 return "ORANGE"
-            if prob >= 0.55 and score >= q_y:
+            if (prob >= 0.50 and score >= max(q_y, 36.0)) or (score >= 45.0):
                 return "YELLOW"
             return "GREEN"
 
-        guarded["alert_level_next_day"] = [
-            rebalance_alert(p, s) for p, s in zip(guarded["pred_prob_critical_t1"], guarded["risk_score_next_day"])
-        ]
+        guarded_parts = []
+        for _, day_df in guarded.groupby("date", sort=False):
+            day_df = day_df.copy()
+            q_y = float(day_df["risk_score_next_day"].quantile(0.65))
+            q_o = float(day_df["risk_score_next_day"].quantile(0.85))
+            q_r = float(day_df["risk_score_next_day"].quantile(0.95))
+            day_df["alert_level_next_day"] = [
+                rebalance_alert(p, s, q_y, q_o, q_r)
+                for p, s in zip(day_df["pred_prob_critical_t1"], day_df["risk_score_next_day"])
+            ]
+            guarded_parts.append(day_df)
+
+        guarded = pd.concat(guarded_parts, ignore_index=True).sort_values(["date", "rank_within_date"]).reset_index(
+            drop=True
+        )
         guarded["recommended_action"] = guarded["alert_level_next_day"].map(ACTION_MAP)
         guarded["confidence_tag"] = np.select(
             [guarded["pred_prob_critical_t1"] >= 0.90, guarded["pred_prob_critical_t1"] >= 0.75],
@@ -618,4 +628,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
