@@ -131,6 +131,17 @@
           </div>
           <p id="whyConfidence" class="why-note">-</p>
           <p id="whyLogic" class="why-logic">Alert color is policy-driven using probability, risk score, and guardrail rules.</p>
+
+          <div class="formula-card">
+            <h4>How This Risk Score Is Calculated</h4>
+            <p id="formulaLine" class="formula-line">Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)</p>
+            <div class="formula-grid">
+              <div><span>Probability Band</span><strong id="probBandText">-</strong></div>
+              <div><span>Risk Band</span><strong id="riskBandText">-</strong></div>
+            </div>
+            <p id="policySummary" class="formula-note">Final color is decided by policy rules using both probability and risk score.</p>
+            <p id="tempOnlyNote" class="formula-note dim">Note: Temperature alone does not decide the alert color.</p>
+          </div>
         </div>
       </article>
 
@@ -211,7 +222,11 @@
       </details>
       <details>
         <summary>How is this prediction generated?</summary>
-        <p>Next-day risk is generated from district-level weather variables and a trained heat-risk model.</p>
+        <p>Next-day risk is generated from district weather inputs and model probability. Final color comes from policy logic that combines both risk score and critical probability.</p>
+      </details>
+      <details>
+        <summary>Why can two hot days have different colors?</summary>
+        <p>Because alert color is not based only on temperature. The model also uses pattern-based probability, heat stress behavior, and policy guardrails.</p>
       </details>
     </section>
   </main>

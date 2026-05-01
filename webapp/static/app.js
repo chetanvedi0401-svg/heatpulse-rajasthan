@@ -42,6 +42,11 @@
   whyDeltaRisk: document.getElementById("whyDeltaRisk"),
   whyPrevAlert: document.getElementById("whyPrevAlert"),
   whyConfidence: document.getElementById("whyConfidence"),
+  formulaLine: document.getElementById("formulaLine"),
+  probBandText: document.getElementById("probBandText"),
+  riskBandText: document.getElementById("riskBandText"),
+  policySummary: document.getElementById("policySummary"),
+  tempOnlyNote: document.getElementById("tempOnlyNote"),
 };
 
 const labels = {
@@ -172,6 +177,21 @@ function confidenceExplain(tag) {
   return "Confidence: Low. Treat this as advisory and monitor updates.";
 }
 
+function probabilityBand(prob) {
+  if (prob >= 0.90) return "Very High (>= 0.90)";
+  if (prob >= 0.75) return "High (0.75 - 0.89)";
+  if (prob >= 0.50) return "Moderate (0.50 - 0.74)";
+  if (prob >= 0.25) return "Low (0.25 - 0.49)";
+  return "Very Low (< 0.25)";
+}
+
+function riskBand(score) {
+  if (score >= 60) return "High (>= 60)";
+  if (score >= 45) return "Elevated (45 - 59)";
+  if (score >= 30) return "Moderate (30 - 44)";
+  return "Low (< 30)";
+}
+
 function buildWhyReasons(current, comparison) {
   const reasons = [];
   const probPct = (current.pred_prob_critical_t1 || 0) * 100;
@@ -217,6 +237,13 @@ function buildWhyReasons(current, comparison) {
   );
 
   return reasons.slice(0, 3);
+}
+
+function buildPolicySummary(current) {
+  const prob = current.pred_prob_critical_t1 || 0;
+  const score = current.risk_score_next_day || 0;
+  const alert = String(current.alert_level_next_day || "GREEN").toUpperCase();
+  return `Final alert: ${alert}. This is derived from Probability Band (${probabilityBand(prob)}) + Risk Band (${riskBand(score)}), then adjusted by guardrail policy if needed.`;
 }
 
 function safetyPlan(current) {
@@ -485,6 +512,11 @@ function renderWhyPanel(current, comparison) {
 
   els.whyPrevAlert.textContent = comparison?.previous_alert_level || "-";
   els.whyConfidence.textContent = confidenceExplain(current.confidence_tag);
+  els.formulaLine.textContent = "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)";
+  els.probBandText.textContent = probabilityBand(current.pred_prob_critical_t1 || 0);
+  els.riskBandText.textContent = riskBand(current.risk_score_next_day || 0);
+  els.policySummary.textContent = buildPolicySummary(current);
+  els.tempOnlyNote.textContent = "Note: Higher temperature can increase risk, but final color also depends on model probability and policy thresholds.";
 }
 
 function renderCurrent(current, comparison) {

@@ -276,6 +276,59 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
   font-size:12px;
 }
 
+.formula-card{
+  margin-top:10px;
+  border:1px solid rgba(125, 211, 252, .25);
+  border-radius:12px;
+  padding:10px;
+  background:linear-gradient(160deg, rgba(8,24,42,.7), rgba(9,30,54,.62));
+}
+.formula-card h4{
+  margin:0 0 8px;
+  font-size:14px;
+  color:#dff3ff;
+}
+.formula-line{
+  margin:0 0 8px;
+  padding:8px 10px;
+  border:1px dashed rgba(125, 211, 252, .35);
+  border-radius:10px;
+  background:rgba(11,33,59,.7);
+  color:#bfe9ff;
+  font-size:12px;
+  line-height:1.4;
+}
+.formula-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:8px;
+}
+.formula-grid div{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px;
+  background:rgba(14,28,48,.56);
+}
+.formula-grid span{
+  display:block;
+  font-size:11px;
+  color:#9fb6d8;
+}
+.formula-grid strong{
+  font-size:13px;
+  color:#f0f6ff;
+}
+.formula-note{
+  margin:0 0 6px;
+  color:#d2e6ff;
+  font-size:12px;
+}
+.formula-note.dim{
+  color:#9eb8da;
+  margin-bottom:0;
+}
+
 #map{height:280px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
 
 table{width:100%;border-collapse:collapse}
@@ -315,4 +368,5 @@ th{color:#9fb6d8}
   .top-nav{flex-direction:column;align-items:flex-start}
   .plan-grid{grid-template-columns:1fr}
   .why-grid{grid-template-columns:1fr}
+  .formula-grid{grid-template-columns:1fr}
 }
