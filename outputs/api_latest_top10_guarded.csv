@@ -1,5 +1,5 @@
 date,district,rain_mm,tmax_c,tmin_c,tavg_c,heat_stress_score,pred_prob_critical_t1,pred_critical_t1,risk_score_next_day,alert_level_next_day,rank_within_date,pipeline_mode,aqi_status,confidence_tag,recommended_action
-2026-05-02,Barmer,0.0,44.2,27.5,35.85,38.80957530107529,0.6388818264566067,0,47.587087871680176,GREEN,1,Heat-only,excluded,Low,Routine monitoring
+2026-05-02,Barmer,0.0,44.2,27.5,35.85,38.80957530107529,0.6388818264566067,0,47.587087871680176,YELLOW,1,Heat-only,excluded,Low,Targeted surveillance + advisories
 2026-05-02,Pali,0.0,42.2,29.1,35.650000000000006,35.395057623655916,0.27990714268752914,0,32.803537449439865,GREEN,2,Heat-only,excluded,Low,Routine monitoring
 2026-05-02,Bikaner,0.0,43.4,28.8,36.1,31.258846849462387,0.16389107467012448,0,26.054438065604906,GREEN,3,Heat-only,excluded,Low,Routine monitoring
 2026-05-02,Jaisalmer,0.0,42.6,28.0,35.3,26.212443881720475,0.09068862079389081,0,20.212190250904484,GREEN,4,Heat-only,excluded,Low,Routine monitoring
