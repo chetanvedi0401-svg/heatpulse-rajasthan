@@ -1,4 +1,4 @@
-﻿const els = {
+const els = {
   district: document.getElementById("districtSelect"),
   date: document.getElementById("dateSelect"),
   refresh: document.getElementById("refreshBtn"),
@@ -47,6 +47,26 @@
   riskBandText: document.getElementById("riskBandText"),
   policySummary: document.getElementById("policySummary"),
   tempOnlyNote: document.getElementById("tempOnlyNote"),
+  simpleKickerAlert: document.getElementById("simpleKickerAlert"),
+  simpleKickerWindow: document.getElementById("simpleKickerWindow"),
+  simpleKickerWater: document.getElementById("simpleKickerWater"),
+  simpleWindowNote: document.getElementById("simpleWindowNote"),
+  tipLabel: document.getElementById("tipLabel"),
+  formulaTitle: document.getElementById("formulaTitle"),
+  probBandLabel: document.getElementById("probBandLabel"),
+  riskBandLabel: document.getElementById("riskBandLabel"),
+  faqTitle: document.getElementById("faqTitle"),
+  faqQ1: document.getElementById("faqQ1"),
+  faqA1: document.getElementById("faqA1"),
+  faqQ2: document.getElementById("faqQ2"),
+  faqA2: document.getElementById("faqA2"),
+  faqQ3: document.getElementById("faqQ3"),
+  faqA3: document.getElementById("faqA3"),
+  faqQ4: document.getElementById("faqQ4"),
+  faqA4: document.getElementById("faqA4"),
+  districtLabel: document.getElementById("districtLabel"),
+  dateLabel: document.getElementById("dateLabel"),
+  whyLogic: document.getElementById("whyLogic"),
 };
 
 const labels = {
@@ -80,37 +100,85 @@ const labels = {
     windowPrefix: "Safe Window:",
     hydrationPrefix: "Water:",
     orsPrefix: "ORS:",
+    districtLabel: "District",
+    dateLabel: "Forecast Date",
+    simpleKickerAlert: "Today's Color Alert",
+    simpleKickerWindow: "Safe Outdoor Time",
+    simpleKickerWater: "Water + ORS Plan",
+    simpleWindowNote: "Use extra caution during peak sun hours (11 AM - 4 PM).",
+    tipLabel: "Health Tip",
+    whyTitle: "Why This Alert?",
+    formulaTitle: "How This Risk Score Is Calculated",
+    probBandLabel: "Probability Band",
+    riskBandLabel: "Risk Band",
+    faqTitle: "Common User Help",
+    faqQ1: "What does Green mean?",
+    faqA1: "Routine monitoring. Normal daily activity can continue with regular hydration.",
+    faqQ2: "What is the difference between Yellow, Orange, and Red?",
+    faqA2: "Yellow: advisory. Orange: preparedness mode. Red: emergency heat-health action with minimal outdoor exposure.",
+    faqQ3: "How is this prediction generated?",
+    faqA3: "Next-day risk is generated from district weather inputs and model probability. Final color comes from policy logic that combines both risk score and critical probability.",
+    faqQ4: "Why can two hot days have different colors?",
+    faqA4: "Because alert color is not based only on temperature. The model also uses pattern-based probability, heat stress behavior, and policy guardrails.",
+    whyLogic: "Alert color is policy-driven using probability, risk score, and guardrail rules.",
+    forecastPrefix: "Forecast window:",
+    formulaLine: "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)",
+    tempOnlyNote: "Note: Higher temperature can increase risk, but final color also depends on model probability and policy thresholds.",
   },
   hi: {
     heroKicker: "Live Heat Intelligence",
-    heroTitle: "District Heat Risk Command Center",
-    refresh: "Refresh Data",
+    heroTitle: "Jila Heat Risk Command Center",
+    refresh: "Data Refresh Karen",
     alertPanelTitle: "Alert Panel",
     mapTitle: "Risk Map Snapshot",
-    trendTitle: "District Trend",
+    trendTitle: "Jila Trend",
     topTitle: "Top-10 Hotspots",
-    mixTitle: "State Alert Mix",
-    riserTitle: "Fastest Rising Risk Districts",
+    mixTitle: "Rajya Alert Mix",
+    riserTitle: "Sabse Tez Badhte Risk Wale Jile",
     planTitle: "Personal Safety Planner",
-    action: "Recommended Action:",
+    action: "Suggested Action:",
     prob: "Critical Probability:",
     conf: "Confidence:",
-    rank: "Rank Within Date:",
+    rank: "Date ke andar Rank:",
     pill1: "Public Dashboard",
     pill2: "Next-Day Risk",
     pill3: "Decision Support",
     thRank: "Rank",
-    thDistrict: "District",
+    thDistrict: "Jila",
     thAlert: "Alert",
     thRisk: "Risk",
     thTmax: "Tmax",
     weatherTitle: "Heat Outlook",
-    fsOn: "Exit Fullscreen",
+    fsOn: "Fullscreen Band Karein",
     fsOff: "Fullscreen",
-    dayCsv: "Download Day CSV",
-    windowPrefix: "Safe Window:",
-    hydrationPrefix: "Water:",
+    dayCsv: "Day CSV Download",
+    windowPrefix: "Safe Time:",
+    hydrationPrefix: "Paani:",
     orsPrefix: "ORS:",
+    districtLabel: "Jila",
+    dateLabel: "Forecast Date",
+    simpleKickerAlert: "Aaj ka Color Alert",
+    simpleKickerWindow: "Safe Outdoor Time",
+    simpleKickerWater: "Paani + ORS Plan",
+    simpleWindowNote: "Peak dhoop (11 AM - 4 PM) me extra savdhani rakhein.",
+    tipLabel: "Health Tip",
+    whyTitle: "Yeh Alert Kyun?",
+    formulaTitle: "Risk Score Kaise Calculate Hota Hai",
+    probBandLabel: "Probability Band",
+    riskBandLabel: "Risk Band",
+    faqTitle: "Common User Help",
+    faqQ1: "Green ka matlab kya hai?",
+    faqA1: "Routine monitoring. Regular hydration ke saath normal daily activity continue kar sakte hain.",
+    faqQ2: "Yellow, Orange aur Red me kya fark hai?",
+    faqA2: "Yellow: advisory. Orange: preparedness mode. Red: emergency heat-health action, outdoor exposure minimum rakhein.",
+    faqQ3: "Yeh prediction kaise banta hai?",
+    faqA3: "Next-day risk district weather inputs aur model probability se banta hai. Final color policy logic decide karti hai jo risk score + critical probability dono use karti hai.",
+    faqQ4: "Do garam dino ka color alag kyun ho sakta hai?",
+    faqA4: "Alert color sirf temperature se decide nahi hota. Model probability, heat stress pattern aur policy guardrails bhi count hote hain.",
+    whyLogic: "Alert color policy rules par based hai jo probability, risk score aur guardrail logic use karte hain.",
+    forecastPrefix: "Forecast window:",
+    formulaLine: "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)",
+    tempOnlyNote: "Note: Temperature badhne se risk badh sakta hai, lekin final color model probability aur policy thresholds par bhi depend karta hai.",
   },
 };
 
@@ -119,6 +187,7 @@ let trendChart = null;
 let mixChart = null;
 let map = null;
 let markerLayer = null;
+const isHi = () => currentLang === "hi";
 
 function alertClass(level) {
   const x = (level || "").toUpperCase();
@@ -145,6 +214,13 @@ function weatherSymbol(tmax, rain, alert) {
 }
 
 function weatherTag(tmax, rain, alert) {
+  if (isHi()) {
+    if (alert === "RED") return "Bahut high heat risk. Outdoor exposure kam se kam rakhein.";
+    if (alert === "ORANGE") return "High heat stress sambhav hai. Hydration breaks plan karein.";
+    if (alert === "YELLOW") return "Moderate caution. Symptoms aur fluids par nazar rakhein.";
+    if (rain > 0) return "Halka rain support mil raha hai, heat manageable ho sakti hai.";
+    return "Conditions filhal relatively stable hain.";
+  }
   if (alert === "RED") return "Extreme heat risk. Reduce outdoor exposure.";
   if (alert === "ORANGE") return "High heat stress likely. Plan hydration breaks.";
   if (alert === "YELLOW") return "Moderate caution. Track symptoms and fluids.";
@@ -153,6 +229,12 @@ function weatherTag(tmax, rain, alert) {
 }
 
 function healthTip(alert) {
+  if (isHi()) {
+    if (alert === "RED") return "Emergency tip: Har 30-45 min ORS + paani, 11am-4pm outdoor work avoid karein.";
+    if (alert === "ORANGE") return "Preparedness tip: Paani, cap aur shaded rest breaks ready rakhein.";
+    if (alert === "YELLOW") return "Advisory tip: Fluids badhayein, khas kar elderly aur outdoor workers ke liye.";
+    return "Routine tip: Hydration steady rakhein aur local updates dekhte rahein.";
+  }
   if (alert === "RED") return "Emergency tip: ORS + water every 30-45 min, avoid 11am-4pm outdoor work.";
   if (alert === "ORANGE") return "Preparedness tip: carry water, cap, and schedule shaded rest breaks.";
   if (alert === "YELLOW") return "Advisory tip: increase fluids, especially for elderly and outdoor workers.";
@@ -160,6 +242,12 @@ function healthTip(alert) {
 }
 
 function riskExplain(alert) {
+  if (isHi()) {
+    if (alert === "RED") return "Very high risk. Sirf zaruri kaam ke liye hi bahar niklein.";
+    if (alert === "ORANGE") return "High risk. Outdoor time limit karein aur frequent breaks lein.";
+    if (alert === "YELLOW") return "Moderate risk. Hydration aur rest intervals badhayein.";
+    return "Low risk. Routine precautions kafi hain.";
+  }
   if (alert === "RED") return "Very high heat risk. Avoid outdoor exposure except essential tasks.";
   if (alert === "ORANGE") return "High risk. Limit outdoor exposure and take frequent breaks.";
   if (alert === "YELLOW") return "Moderate risk. Increase hydration and rest intervals.";
@@ -168,6 +256,11 @@ function riskExplain(alert) {
 
 function confidenceExplain(tag) {
   const x = String(tag || "").toUpperCase();
+  if (isHi()) {
+    if (x === "HIGH") return "Confidence: High. Similar weather patterns training data me dekhe gaye hain.";
+    if (x === "MEDIUM") return "Confidence: Medium. Signal strong hai, par extreme nahi.";
+    return "Confidence: Low. Isse advisory samjhein aur updates monitor karein.";
+  }
   if (x === "HIGH") {
     return "Confidence: High. Similar weather patterns were seen in training data.";
   }
@@ -178,6 +271,13 @@ function confidenceExplain(tag) {
 }
 
 function probabilityBand(prob) {
+  if (isHi()) {
+    if (prob >= 0.90) return "Bahut High (>= 0.90)";
+    if (prob >= 0.75) return "High (0.75 - 0.89)";
+    if (prob >= 0.50) return "Moderate (0.50 - 0.74)";
+    if (prob >= 0.25) return "Low (0.25 - 0.49)";
+    return "Bahut Low (< 0.25)";
+  }
   if (prob >= 0.90) return "Very High (>= 0.90)";
   if (prob >= 0.75) return "High (0.75 - 0.89)";
   if (prob >= 0.50) return "Moderate (0.50 - 0.74)";
@@ -186,6 +286,12 @@ function probabilityBand(prob) {
 }
 
 function riskBand(score) {
+  if (isHi()) {
+    if (score >= 60) return "High (>= 60)";
+    if (score >= 45) return "Elevated (45 - 59)";
+    if (score >= 30) return "Moderate (30 - 44)";
+    return "Low (< 30)";
+  }
   if (score >= 60) return "High (>= 60)";
   if (score >= 45) return "Elevated (45 - 59)";
   if (score >= 30) return "Moderate (30 - 44)";
@@ -201,39 +307,41 @@ function buildWhyReasons(current, comparison) {
   const delta = comparison?.risk_delta ?? null;
 
   if (probPct >= 90) {
-    reasons.push(`Model critical probability is very high at ${probPct.toFixed(1)}%.`);
+    reasons.push(isHi() ? `Model critical probability bahut high hai: ${probPct.toFixed(1)}%.` : `Model critical probability is very high at ${probPct.toFixed(1)}%.`);
   } else if (probPct >= 75) {
-    reasons.push(`Model critical probability is elevated at ${probPct.toFixed(1)}%.`);
+    reasons.push(isHi() ? `Model critical probability elevated hai: ${probPct.toFixed(1)}%.` : `Model critical probability is elevated at ${probPct.toFixed(1)}%.`);
   } else if (probPct >= 55) {
-    reasons.push(`Model indicates moderate critical probability at ${probPct.toFixed(1)}%.`);
+    reasons.push(isHi() ? `Model moderate critical probability dikhata hai: ${probPct.toFixed(1)}%.` : `Model indicates moderate critical probability at ${probPct.toFixed(1)}%.`);
   }
 
   if (heatStress >= 50) {
-    reasons.push(`Heat stress score is high (${heatStress.toFixed(1)}), increasing health risk.`);
+    reasons.push(isHi() ? `Heat stress score high hai (${heatStress.toFixed(1)}), health risk badh raha hai.` : `Heat stress score is high (${heatStress.toFixed(1)}), increasing health risk.`);
   } else if (heatStress >= 35) {
-    reasons.push(`Heat stress score is moderate (${heatStress.toFixed(1)}).`);
+    reasons.push(isHi() ? `Heat stress score moderate hai (${heatStress.toFixed(1)}).` : `Heat stress score is moderate (${heatStress.toFixed(1)}).`);
   }
 
   if (tmax >= 42) {
-    reasons.push(`Maximum temperature is extreme at ${tmax.toFixed(1)} deg C.`);
+    reasons.push(isHi() ? `Maximum temperature extreme hai: ${tmax.toFixed(1)} deg C.` : `Maximum temperature is extreme at ${tmax.toFixed(1)} deg C.`);
   } else if (tmax >= 39) {
-    reasons.push(`Maximum temperature is high at ${tmax.toFixed(1)} deg C.`);
+    reasons.push(isHi() ? `Maximum temperature high hai: ${tmax.toFixed(1)} deg C.` : `Maximum temperature is high at ${tmax.toFixed(1)} deg C.`);
   }
 
   if (rain <= 0.1) {
-    reasons.push("No meaningful rainfall support is expected, so cooling relief is limited.");
+    reasons.push(isHi() ? "Meaningful rainfall support expected nahi hai, isliye cooling relief limited hai." : "No meaningful rainfall support is expected, so cooling relief is limited.");
   }
 
   if (delta !== null) {
     if (delta >= 5) {
-      reasons.push(`Risk increased sharply by ${delta.toFixed(2)} vs previous date.`);
+      reasons.push(isHi() ? `Previous date ke mukable risk ${delta.toFixed(2)} se tez bada hai.` : `Risk increased sharply by ${delta.toFixed(2)} vs previous date.`);
     } else if (delta <= -5) {
-      reasons.push(`Risk dropped by ${Math.abs(delta).toFixed(2)} vs previous date.`);
+      reasons.push(isHi() ? `Previous date ke mukable risk ${Math.abs(delta).toFixed(2)} se gira hai.` : `Risk dropped by ${Math.abs(delta).toFixed(2)} vs previous date.`);
     }
   }
 
   reasons.push(
-    "Final alert color follows policy thresholds using risk score, model probability, and guardrail balancing."
+    isHi()
+      ? "Final alert color policy thresholds follow karta hai jo risk score, model probability aur guardrail balancing use karte hain."
+      : "Final alert color follows policy thresholds using risk score, model probability, and guardrail balancing."
   );
 
   return reasons.slice(0, 3);
@@ -243,6 +351,9 @@ function buildPolicySummary(current) {
   const prob = current.pred_prob_critical_t1 || 0;
   const score = current.risk_score_next_day || 0;
   const alert = String(current.alert_level_next_day || "GREEN").toUpperCase();
+  if (isHi()) {
+    return `Final alert: ${alert}. Yeh Probability Band (${probabilityBand(prob)}) + Risk Band (${riskBand(score)}) se nikalta hai, fir zarurat par guardrail policy se adjust hota hai.`;
+  }
   return `Final alert: ${alert}. This is derived from Probability Band (${probabilityBand(prob)}) + Risk Band (${riskBand(score)}), then adjusted by guardrail policy if needed.`;
 }
 
@@ -251,10 +362,10 @@ function safetyPlan(current) {
   if (tmax >= 43) {
     return {
       hydration: "4.5 - 5.5 L/day",
-      ors: "Every 2-3 hours",
+      ors: isHi() ? "Har 2-3 ghante" : "Every 2-3 hours",
       window: "Before 10:00 AM / After 5:00 PM",
-      riskGroup: "Elderly, children, outdoor workers",
-      summary: "Severe heat expected. Use shaded breaks, light clothing, and strict hydration discipline.",
+      riskGroup: isHi() ? "Elderly, bachche, outdoor workers" : "Elderly, children, outdoor workers",
+      summary: isHi() ? "Severe heat expected hai. Shade breaks, light clothing aur strict hydration follow karein." : "Severe heat expected. Use shaded breaks, light clothing, and strict hydration discipline.",
     };
   }
   if (tmax >= 40) {
@@ -262,8 +373,8 @@ function safetyPlan(current) {
       hydration: "3.5 - 4.5 L/day",
       ors: "2-3 times/day",
       window: "Before 11:00 AM / After 4:30 PM",
-      riskGroup: "Outdoor workers, chronic patients",
-      summary: "High heat expected. Avoid long direct sun exposure in peak afternoon.",
+      riskGroup: isHi() ? "Outdoor workers, chronic patients" : "Outdoor workers, chronic patients",
+      summary: isHi() ? "High heat expected hai. Peak afternoon me direct sun exposure avoid karein." : "High heat expected. Avoid long direct sun exposure in peak afternoon.",
     };
   }
   if (tmax >= 36) {
@@ -271,16 +382,16 @@ function safetyPlan(current) {
       hydration: "3.0 - 3.5 L/day",
       ors: "1-2 times/day",
       window: "Before 12:00 PM / After 4:00 PM",
-      riskGroup: "Elderly and children",
-      summary: "Moderate heat. Maintain fluids and monitor fatigue signs.",
+      riskGroup: isHi() ? "Elderly aur bachche" : "Elderly and children",
+      summary: isHi() ? "Moderate heat. Fluids maintain rakhein aur fatigue signs monitor karein." : "Moderate heat. Maintain fluids and monitor fatigue signs.",
     };
   }
   return {
     hydration: "2.5 - 3.0 L/day",
-    ors: "If needed",
-    window: "Normal schedule",
-    riskGroup: "Sensitive groups only",
-    summary: "Low heat stress conditions. Routine precautions are enough.",
+    ors: isHi() ? "Agar zarurat ho" : "If needed",
+    window: isHi() ? "Normal schedule" : "Normal schedule",
+    riskGroup: isHi() ? "Sensitive groups only" : "Sensitive groups only",
+    summary: isHi() ? "Low heat stress conditions. Routine precautions kafi hain." : "Low heat stress conditions. Routine precautions are enough.",
   };
 }
 
@@ -315,7 +426,27 @@ function applyLanguage() {
   setText("thTmax", t.thTmax);
   setText("weatherTitle", t.weatherTitle);
   setText("downloadDayBtn", t.dayCsv);
-  setText("whyTitle", "Why This Alert?");
+  setText("whyTitle", t.whyTitle);
+  setText("districtLabel", t.districtLabel);
+  setText("dateLabel", t.dateLabel);
+  setText("simpleKickerAlert", t.simpleKickerAlert);
+  setText("simpleKickerWindow", t.simpleKickerWindow);
+  setText("simpleKickerWater", t.simpleKickerWater);
+  setText("simpleWindowNote", t.simpleWindowNote);
+  setText("tipLabel", t.tipLabel);
+  setText("formulaTitle", t.formulaTitle);
+  setText("probBandLabel", t.probBandLabel);
+  setText("riskBandLabel", t.riskBandLabel);
+  setText("faqTitle", t.faqTitle);
+  setText("faqQ1", t.faqQ1);
+  setText("faqA1", t.faqA1);
+  setText("faqQ2", t.faqQ2);
+  setText("faqA2", t.faqA2);
+  setText("faqQ3", t.faqQ3);
+  setText("faqA3", t.faqA3);
+  setText("faqQ4", t.faqQ4);
+  setText("faqA4", t.faqA4);
+  setText("whyLogic", t.whyLogic);
 }
 
 function setFsButtonText() {
@@ -348,7 +479,8 @@ function fillSelectors(meta) {
     .map((d) => `<option value="${d}">${d}</option>`)
     .join("");
   els.date.value = meta.latest_date;
-  els.forecastWindow.textContent = `Forecast window: ${meta.forecast_start} to ${meta.forecast_end}`;
+  const t = labels[currentLang];
+  els.forecastWindow.textContent = `${t.forecastPrefix} ${meta.forecast_start} to ${meta.forecast_end}`;
   setMixChips(meta.alert_mix_latest);
 }
 
@@ -417,6 +549,10 @@ function renderMap(items) {
   ensureMap();
   if (markerLayer) markerLayer.clearLayers();
   markerLayer = L.layerGroup().addTo(map);
+  const districtLabel = isHi() ? "Jila" : "District";
+  const alertLabel = "Alert";
+  const riskLabel = "Risk";
+  const tmaxLabel = "Tmax";
   items.forEach((r) => {
     if (!r.latitude || !r.longitude) return;
     const marker = L.circleMarker([r.latitude, r.longitude], {
@@ -427,7 +563,7 @@ function renderMap(items) {
       weight: 2,
     });
     marker.bindPopup(
-      `<b>${r.district}</b><br>Alert: ${r.alert_level_next_day}<br>Risk: ${r.risk_score_next_day.toFixed(2)}<br>Tmax: ${r.tmax_c.toFixed(1)}`
+      `<b>${districtLabel}: ${r.district}</b><br>${alertLabel}: ${r.alert_level_next_day}<br>${riskLabel}: ${r.risk_score_next_day.toFixed(2)}<br>${tmaxLabel}: ${r.tmax_c.toFixed(1)}`
     );
     marker.addTo(markerLayer);
   });
@@ -491,6 +627,7 @@ function renderSimpleCards(current) {
 }
 
 function renderWhyPanel(current, comparison) {
+  const t = labels[currentLang];
   const reasons = buildWhyReasons(current, comparison);
   els.whyReason1.textContent = reasons[0] || "-";
   els.whyReason2.textContent = reasons[1] || "-";
@@ -512,11 +649,11 @@ function renderWhyPanel(current, comparison) {
 
   els.whyPrevAlert.textContent = comparison?.previous_alert_level || "-";
   els.whyConfidence.textContent = confidenceExplain(current.confidence_tag);
-  els.formulaLine.textContent = "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)";
+  els.formulaLine.textContent = t.formulaLine;
   els.probBandText.textContent = probabilityBand(current.pred_prob_critical_t1 || 0);
   els.riskBandText.textContent = riskBand(current.risk_score_next_day || 0);
   els.policySummary.textContent = buildPolicySummary(current);
-  els.tempOnlyNote.textContent = "Note: Higher temperature can increase risk, but final color also depends on model probability and policy thresholds.";
+  els.tempOnlyNote.textContent = t.tempOnlyNote;
 }
 
 function renderCurrent(current, comparison) {
@@ -573,13 +710,11 @@ els.refresh.addEventListener("click", async () => {
   await init();
 });
 
-els.langBtn.addEventListener("click", () => {
+els.langBtn.addEventListener("click", async () => {
   currentLang = currentLang === "en" ? "hi" : "en";
+  await loadSelection();
   applyLanguage();
   setFsButtonText();
-  renderPlanner({
-    tmax_c: Number.parseFloat(els.mTmax.textContent) || 0,
-  });
 });
 
 els.fsBtn.addEventListener("click", async () => {
