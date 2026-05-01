@@ -1,2 +1,4 @@
 run_time,raw_rows_total,raw_unique_dates,raw_start_date,raw_end_date,raw_duplicate_date_district,guarded_rows_total,guarded_unique_dates,guarded_start_date,guarded_end_date,guarded_duplicate_date_district,historical_top10_rows,status
 2026-05-01 22:26:48,92,4,2026-04-29,2026-05-02,0,92,4,2026-04-29,2026-05-02,0,40,ok
+2026-05-02 00:00:24,92,4,2026-04-29,2026-05-02,0,92,4,2026-04-29,2026-05-02,0,40,ok
+2026-05-02 00:50:55,92,4,2026-04-29,2026-05-02,0,92,4,2026-04-29,2026-05-02,0,40,ok
