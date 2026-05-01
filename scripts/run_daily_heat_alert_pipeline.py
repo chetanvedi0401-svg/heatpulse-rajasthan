@@ -29,6 +29,117 @@ ACTION_MAP = {
     "RED": "Emergency heat-health action",
 }
 
+API_REQUIRED_COLS = ["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]
+
+
+def normalize_district(s):
+    return s.astype(str).str.strip().str.replace(r"\s+", " ", regex=True).str.title()
+
+
+def load_expected_districts():
+    df = pd.read_csv(DOCS / "step9_district_coordinates.csv")
+    return sorted(normalize_district(df["district"]).unique().tolist())
+
+
+def evaluate_api_quality(api_file, expected_districts):
+    out = {
+        "api_file": str(api_file),
+        "is_valid": False,
+        "reason": "",
+        "rows": 0,
+        "unique_dates": 0,
+        "expected_districts": len(expected_districts),
+        "observed_districts": 0,
+        "min_districts_per_date": 0,
+        "max_districts_per_date": 0,
+        "duplicate_date_district": 0,
+        "null_core_fields": 0,
+        "invalid_temp_rows": 0,
+        "invalid_rain_rows": 0,
+    }
+    try:
+        df = pd.read_csv(api_file)
+    except Exception as e:
+        out["reason"] = f"read_error: {e}"
+        return out
+
+    missing = [c for c in API_REQUIRED_COLS if c not in df.columns]
+    if missing:
+        out["reason"] = f"missing_columns: {missing}"
+        return out
+
+    df = df[API_REQUIRED_COLS].copy()
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["district"] = normalize_district(df["district"])
+    for c in ["rain_mm", "tmax_c", "tmin_c", "tavg_c"]:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    out["rows"] = int(len(df))
+    out["unique_dates"] = int(df["date"].nunique())
+    out["duplicate_date_district"] = int(df.duplicated(subset=["date", "district"]).sum())
+
+    core_null = df[["date", "district", "rain_mm", "tmax_c", "tmin_c"]].isna().any(axis=1)
+    out["null_core_fields"] = int(core_null.sum())
+
+    invalid_temp = (df["tmax_c"] < -10) | (df["tmax_c"] > 60) | (df["tmin_c"] < -15) | (df["tmin_c"] > 45)
+    out["invalid_temp_rows"] = int(invalid_temp.sum())
+
+    invalid_rain = (df["rain_mm"] < 0) | (df["rain_mm"] > 1000)
+    out["invalid_rain_rows"] = int(invalid_rain.sum())
+
+    observed = set(df["district"].dropna().unique().tolist())
+    out["observed_districts"] = int(len(observed))
+    by_date = df.groupby(df["date"].dt.normalize())["district"].nunique() if len(df) else pd.Series(dtype=int)
+    out["min_districts_per_date"] = int(by_date.min()) if len(by_date) else 0
+    out["max_districts_per_date"] = int(by_date.max()) if len(by_date) else 0
+
+    expected_count = len(expected_districts)
+    min_required = max(20, int(np.floor(expected_count * 0.90)))
+
+    checks = [
+        out["rows"] > 0,
+        out["unique_dates"] >= 1,
+        out["duplicate_date_district"] == 0,
+        out["null_core_fields"] == 0,
+        out["invalid_temp_rows"] == 0,
+        out["invalid_rain_rows"] == 0,
+        out["observed_districts"] >= min_required,
+        out["min_districts_per_date"] >= min_required,
+    ]
+    out["is_valid"] = bool(all(checks))
+    if out["is_valid"]:
+        out["reason"] = "ok"
+    else:
+        out["reason"] = (
+            f"quality_fail(rows={out['rows']}, dates={out['unique_dates']}, "
+            f"obs_dist={out['observed_districts']}, min_dist_date={out['min_districts_per_date']}, "
+            f"dup={out['duplicate_date_district']}, null={out['null_core_fields']}, "
+            f"bad_temp={out['invalid_temp_rows']}, bad_rain={out['invalid_rain_rows']})"
+        )
+    return out
+
+
+def list_valid_api_files(expected_districts):
+    files = sorted(glob.glob(str(RAW / "api_daily_weather_*.csv")))
+    valid_files = []
+    quality_rows = []
+    for f in files:
+        q = evaluate_api_quality(f, expected_districts)
+        quality_rows.append(q)
+        if q["is_valid"]:
+            valid_files.append(Path(f))
+    return valid_files, quality_rows
+
+
+def append_api_quality_gate_log(row):
+    qfile = DOCS / "step10_api_quality_gate_report.csv"
+    frame = pd.DataFrame([row])
+    if qfile.exists():
+        old = pd.read_csv(qfile)
+        frame = pd.concat([old, frame], ignore_index=True)
+    frame.to_csv(qfile, index=False)
+    return qfile
+
 
 def load_model_artifacts():
     model_table_file = PROCESSED / "model_table_step3.csv"
@@ -152,9 +263,12 @@ def latest_existing_api_file():
     return Path(files[-1])
 
 
-def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr):
+def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_files_for_archive=None):
     # Load full raw API archive so historical forecast dates are always retained.
-    api_files = sorted(glob.glob(str(RAW / "api_daily_weather_*.csv")))
+    if api_files_for_archive is None:
+        api_files = sorted(glob.glob(str(RAW / "api_daily_weather_*.csv")))
+    else:
+        api_files = [str(p) for p in api_files_for_archive]
     if not api_files:
         raise FileNotFoundError("No api_daily_weather_*.csv files found in data/raw.")
     api_parts = [pd.read_csv(f, parse_dates=["date"]) for f in api_files]
@@ -167,7 +281,7 @@ def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr):
     hist_df = pd.read_csv(PROCESSED / "district_daily_climate_2017_2025_clean.csv", parse_dates=["date"])
 
     for df_ in [api_df, hist_df]:
-        df_["district"] = df_["district"].astype(str).str.strip().str.replace(r"\s+", " ", regex=True).str.title()
+        df_["district"] = normalize_district(df_["district"])
 
     api_df = api_df[["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]].copy()
     hist_df = hist_df[["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]].copy()
@@ -347,24 +461,98 @@ def main():
     run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
         model_table, clf, model_features, best_thr = load_model_artifacts()
+        expected_districts = load_expected_districts()
         hist_out = build_historical_auto_alerts(model_table, clf, model_features, best_thr)
 
         api_status = "success"
         api_message = ""
+        api_quality_message = ""
         api_out = {}
         try:
             api_file, api_stdout = fetch_latest_api_file()
-            api_out = build_api_live_guarded_alerts(api_file, clf, model_features, best_thr)
+            valid_files, quality_rows = list_valid_api_files(expected_districts)
+            fetched_quality = evaluate_api_quality(api_file, expected_districts)
+
+            if fetched_quality["is_valid"]:
+                selected_file = api_file
+                selected_mode = "live_valid"
+                api_status = "success"
+            else:
+                # Latest valid fallback from archive
+                selected_file = valid_files[-1] if valid_files else None
+                selected_mode = "fallback_valid_archive" if selected_file is not None else "no_valid_api_file"
+                api_status = "stale_fallback" if selected_file is not None else "failed"
+
+            append_api_quality_gate_log(
+                {
+                    "run_time": run_time,
+                    "fetched_file": str(api_file),
+                    "fetched_valid": fetched_quality["is_valid"],
+                    "selected_mode": selected_mode,
+                    "selected_file": str(selected_file) if selected_file is not None else "",
+                    "valid_archive_files": len(valid_files),
+                    "invalid_archive_files": len(quality_rows) - len(valid_files),
+                    "fetched_reason": fetched_quality["reason"],
+                }
+            )
+
+            if selected_file is None:
+                raise RuntimeError("No quality-valid API file available in archive.")
+
+            api_out = build_api_live_guarded_alerts(
+                selected_file,
+                clf,
+                model_features,
+                best_thr,
+                api_files_for_archive=valid_files,
+            )
             api_message = api_stdout
+            api_quality_message = f"quality_mode={selected_mode}; selected_file={selected_file}"
         except Exception as api_err:
-            fallback_file = latest_existing_api_file()
+            valid_files, quality_rows = list_valid_api_files(expected_districts)
+            fallback_file = valid_files[-1] if valid_files else None
             if fallback_file is not None:
                 api_status = "stale_fallback"
-                api_out = build_api_live_guarded_alerts(fallback_file, clf, model_features, best_thr)
+                api_out = build_api_live_guarded_alerts(
+                    fallback_file,
+                    clf,
+                    model_features,
+                    best_thr,
+                    api_files_for_archive=valid_files,
+                )
                 api_message = f"Live API fetch failed; used fallback file: {fallback_file}\nError: {api_err}"
+                api_quality_message = (
+                    f"quality_mode=fallback_after_fetch_error; valid_archive_files={len(valid_files)}; "
+                    f"invalid_archive_files={len(quality_rows) - len(valid_files)}"
+                )
+                append_api_quality_gate_log(
+                    {
+                        "run_time": run_time,
+                        "fetched_file": "",
+                        "fetched_valid": False,
+                        "selected_mode": "fallback_after_fetch_error",
+                        "selected_file": str(fallback_file),
+                        "valid_archive_files": len(valid_files),
+                        "invalid_archive_files": len(quality_rows) - len(valid_files),
+                        "fetched_reason": str(api_err),
+                    }
+                )
             else:
                 api_status = "failed"
                 api_message = str(api_err)
+                api_quality_message = "quality_mode=failed_no_valid_archive"
+                append_api_quality_gate_log(
+                    {
+                        "run_time": run_time,
+                        "fetched_file": "",
+                        "fetched_valid": False,
+                        "selected_mode": "failed_no_valid_archive",
+                        "selected_file": "",
+                        "valid_archive_files": 0,
+                        "invalid_archive_files": 0,
+                        "fetched_reason": str(api_err),
+                    }
+                )
 
         status = "success" if api_status in ["success", "stale_fallback"] else "partial_success"
         entry = {
@@ -382,7 +570,7 @@ def main():
             "api_historical_top10_file": api_out.get("api_historical_top10_file", ""),
             "api_latest_top10_file": api_out.get("api_latest_top10_file", ""),
             "api_reliability_report_file": api_out.get("api_reliability_report_file", ""),
-            "message": api_message,
+            "message": f"{api_quality_message}\n{api_message}",
         }
         run_log_file = append_run_log(entry)
 
@@ -430,3 +618,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
