@@ -1,5 +1,6 @@
 
 import glob
+import os
 import subprocess
 import sys
 import traceback
@@ -10,7 +11,8 @@ import joblib
 import numpy as np
 import pandas as pd
 
-ROOT = Path(r"d:/Rajasthan Climate Risk Command System")
+# Resolve project root dynamically so the same script works on local machine and cloud runners.
+ROOT = Path(os.getenv("PROJECT_ROOT", Path(__file__).resolve().parents[1]))
 RAW = ROOT / "data" / "raw"
 PROCESSED = ROOT / "data" / "processed"
 OUTPUTS = ROOT / "outputs"
