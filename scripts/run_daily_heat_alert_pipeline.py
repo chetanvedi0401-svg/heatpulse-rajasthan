@@ -143,12 +143,35 @@ def append_api_quality_gate_log(row):
     return qfile
 
 
+def patch_sklearn_model_compat(clf):
+    """
+    Make old pickled sklearn estimators compatible with newer runtime versions.
+    Some LogisticRegression pickles created in older versions may miss attributes
+    that newer sklearn accesses during predict_proba.
+    """
+    try:
+        candidates = []
+        if hasattr(clf, "steps"):
+            candidates.extend([step_model for _, step_model in clf.steps])
+        candidates.append(clf)
+
+        for obj in candidates:
+            if obj.__class__.__name__ == "LogisticRegression":
+                if not hasattr(obj, "multi_class"):
+                    obj.multi_class = "auto"
+    except Exception:
+        # Non-blocking safety patch; never fail pipeline for compatibility patch.
+        pass
+    return clf
+
+
 def load_model_artifacts():
     model_table_file = PROCESSED / "model_table_step3.csv"
     model_file = MODELS / "baseline_logistic_step4.joblib"
 
     model_table = pd.read_csv(model_table_file, parse_dates=["date"])
     clf = joblib.load(model_file)
+    clf = patch_sklearn_model_compat(clf)
 
     feature_file = DOCS / "step4_model_features.txt"
     with open(feature_file, "r", encoding="utf-8") as f:
