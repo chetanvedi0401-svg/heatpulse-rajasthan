@@ -1,0 +1,73 @@
+name: Heat Alerts Auto Update
+
+on:
+  schedule:
+    # UTC schedule (IST = UTC+05:30):
+    # 01:00 UTC -> 06:30 IST
+    # 05:00 UTC -> 10:30 IST
+    # 09:00 UTC -> 14:30 IST
+    # 13:00 UTC -> 18:30 IST
+    # 17:00 UTC -> 22:30 IST
+    - cron: "0 1,5,9,13,17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heat-alert-auto-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install pipeline dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements_pipeline.txt
+
+      - name: Run heat alert pipeline
+        env:
+          PROJECT_ROOT: ${{ github.workspace }}
+        run: |
+          python scripts/run_daily_heat_alert_pipeline.py
+
+      - name: Commit and push updated artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          shopt -s nullglob
+          files=(
+            outputs/api_daily_top10_guarded.csv
+            outputs/api_forecast_alerts_step9.csv
+            outputs/api_forecast_alerts_step9_guarded.csv
+            outputs/api_latest_top10_guarded.csv
+            docs/step10_data_reliability_report.csv
+            docs/step10_api_quality_gate_report.csv
+            logs/daily_run_log.csv
+            data/raw/api_daily_weather_*.csv
+          )
+
+          git add "${files[@]}"
+
+          if git diff --cached --quiet; then
+            echo "No output change detected."
+          else
+            ts="$(date -u +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "Auto update heat alerts (${ts})"
+            git push
+          fi
