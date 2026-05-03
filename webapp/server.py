@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from functools import lru_cache
 from io import StringIO
 import os
 from pathlib import Path
+import re
 from typing import Any
 
 import pandas as pd
@@ -17,6 +19,7 @@ DOCS = ROOT / "docs"
 LIVE_FILE = OUTPUTS / "api_forecast_alerts_step9_guarded.csv"
 TOP10_FILE = OUTPUTS / "api_latest_top10_guarded.csv"
 COORD_FILE = DOCS / "step9_district_coordinates.csv"
+LOG_FILE = ROOT / "logs" / "daily_run_log.csv"
 
 ALERT_ORDER = ["RED", "ORANGE", "YELLOW", "GREEN"]
 
@@ -67,6 +70,49 @@ def get_frames():
     return _cached_frames(live_mtime, top_mtime, coord_mtime)
 
 
+def _extract_source_date(path_s: str) -> str:
+    m = re.search(r"(\d{8})(?=\.csv$)", str(path_s or ""))
+    if not m:
+        return ""
+    try:
+        return str(datetime.strptime(m.group(1), "%Y%m%d").date())
+    except Exception:
+        return ""
+
+
+def _runtime_status() -> dict[str, str]:
+    out = {
+        "pipeline_last_run": "",
+        "pipeline_status": "",
+        "api_status": "",
+        "api_source_file": "",
+        "api_source_date": "",
+        "live_file_updated_at_utc": "",
+    }
+    if LIVE_FILE.exists():
+        out["live_file_updated_at_utc"] = datetime.fromtimestamp(
+            LIVE_FILE.stat().st_mtime, tz=timezone.utc
+        ).strftime("%Y-%m-%d %H:%M UTC")
+
+    if not LOG_FILE.exists():
+        return out
+
+    try:
+        logs = pd.read_csv(LOG_FILE)
+        if logs.empty:
+            return out
+        row = logs.iloc[-1]
+        out["pipeline_last_run"] = str(row.get("run_time", "") or "")
+        out["pipeline_status"] = str(row.get("status", "") or "")
+        out["api_status"] = str(row.get("api_status", "") or "")
+        out["api_source_file"] = str(row.get("api_input_file", "") or "")
+        out["api_source_date"] = _extract_source_date(out["api_source_file"])
+    except Exception:
+        return out
+
+    return out
+
+
 def alert_mix(df: pd.DataFrame) -> dict[str, int]:
     vc = df["alert_level_next_day"].value_counts()
     return {k: int(vc.get(k, 0)) for k in ALERT_ORDER}
@@ -77,9 +123,19 @@ def home():
     return render_template("index.html")
 
 
+@app.after_request
+def add_no_cache_headers(response):
+    if request.path == "/" or request.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
+
 @app.route("/api/meta")
 def api_meta():
     live, _, _ = get_frames()
+    runtime = _runtime_status()
     dates = sorted(live["date"].dt.date.unique().tolist())
     districts = sorted(live["district"].unique().tolist())
     latest_date = dates[-1] if dates else None
@@ -96,6 +152,12 @@ def api_meta():
             "previous_date": str(previous_date) if previous_date else "",
             "alert_mix_latest": alert_mix(latest_df),
             "rows": int(len(live)),
+            "live_file_updated_at_utc": runtime["live_file_updated_at_utc"],
+            "pipeline_last_run": runtime["pipeline_last_run"],
+            "pipeline_status": runtime["pipeline_status"],
+            "api_status": runtime["api_status"],
+            "api_source_file": runtime["api_source_file"],
+            "api_source_date": runtime["api_source_date"],
         }
     )
 
