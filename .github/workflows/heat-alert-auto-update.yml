@@ -58,6 +58,8 @@ jobs:
             outputs/api_latest_top10_guarded.csv
             docs/step10_data_reliability_report.csv
             docs/step10_api_quality_gate_report.csv
+            docs/step11_api_failsafe_alert.txt
+            docs/step11_api_failsafe_events.csv
             logs/daily_run_log.csv
             data/raw/api_daily_weather_*.csv
           )
