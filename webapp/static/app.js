@@ -73,6 +73,10 @@ const els = {
   statusUpdatedValue: document.getElementById("statusUpdatedValue"),
   statusApiValue: document.getElementById("statusApiValue"),
   statusSourceValue: document.getElementById("statusSourceValue"),
+  mapShell: document.getElementById("mapShell"),
+  trendShell: document.getElementById("trendShell"),
+  topShell: document.getElementById("topShell"),
+  riserShell: document.getElementById("riserShell"),
 };
 
 const labels = {
@@ -224,6 +228,15 @@ function setRefreshLoading(flag) {
   } else {
     els.refresh.classList.remove("is-loading");
   }
+}
+
+function setSkeletonLoading(flag) {
+  const targets = [els.mapShell, els.trendShell, els.topShell, els.riserShell];
+  targets.forEach((el) => {
+    if (!el) return;
+    if (flag) el.classList.add("is-loading");
+    else el.classList.remove("is-loading");
+  });
 }
 
 function animateNumber(el, target, decimals = 1) {
@@ -800,23 +813,29 @@ function setupRevealAnimations() {
 }
 
 async function loadSelection() {
+  setSkeletonLoading(true);
   const district = els.district.value;
   const date = els.date.value;
-  const [districtRes, dayRes] = await Promise.all([
-    jget(`/api/district?district=${encodeURIComponent(district)}&date=${encodeURIComponent(date)}`),
-    jget(`/api/day?date=${encodeURIComponent(date)}`),
-  ]);
+  try {
+    const [districtRes, dayRes] = await Promise.all([
+      jget(`/api/district?district=${encodeURIComponent(district)}&date=${encodeURIComponent(date)}`),
+      jget(`/api/day?date=${encodeURIComponent(date)}`),
+    ]);
 
-  renderCurrent(districtRes.current, districtRes.comparison || null);
-  renderTrend(districtRes.trend);
-  renderMap(dayRes.items || []);
-  renderMixChart(dayRes.alert_mix || {});
-  await loadRisers();
-  els.downloadDayBtn.href = `/download/day.csv?date=${encodeURIComponent(date)}`;
+    renderCurrent(districtRes.current, districtRes.comparison || null);
+    renderTrend(districtRes.trend);
+    renderMap(dayRes.items || []);
+    renderMixChart(dayRes.alert_mix || {});
+    await loadRisers();
+    els.downloadDayBtn.href = `/download/day.csv?date=${encodeURIComponent(date)}`;
+  } finally {
+    setSkeletonLoading(false);
+  }
 }
 
 async function init() {
   setRefreshLoading(true);
+  setSkeletonLoading(true);
   const meta = await jget("/api/meta");
   renderStatus(meta);
   fillSelectors(meta);
@@ -860,5 +879,6 @@ setupRevealAnimations();
 init().catch((e) => {
   console.error(e);
   setRefreshLoading(false);
+  setSkeletonLoading(false);
   alert("Failed to load dashboard data. Check backend server and data files.");
 });
