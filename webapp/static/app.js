@@ -84,6 +84,19 @@ const els = {
   solarSunset: document.getElementById("solarSunset"),
   solarDaylight: document.getElementById("solarDaylight"),
   solarArcFill: document.getElementById("solarArcFill"),
+  tickerLabel: document.getElementById("tickerLabel"),
+  tickerTrack: document.getElementById("tickerTrack"),
+  compareTitle: document.getElementById("compareTitle"),
+  compareLabel: document.getElementById("compareLabel"),
+  compareDistrict: document.getElementById("compareDistrictSelect"),
+  comparePairLabel: document.getElementById("comparePairLabel"),
+  comparePairValue: document.getElementById("comparePairValue"),
+  compareRiskLabel: document.getElementById("compareRiskLabel"),
+  compareRiskValue: document.getElementById("compareRiskValue"),
+  compareTmaxLabel: document.getElementById("compareTmaxLabel"),
+  compareTmaxValue: document.getElementById("compareTmaxValue"),
+  compareAlertLabel: document.getElementById("compareAlertLabel"),
+  compareAlertValue: document.getElementById("compareAlertValue"),
 };
 
 const labels = {
@@ -148,6 +161,13 @@ const labels = {
     solarSunriseLabel: "Sunrise",
     solarSunsetLabel: "Sunset",
     solarDaylightPrefix: "Daylight",
+    tickerLabel: "Live Heatwave Feed",
+    compareTitle: "District Compare",
+    compareLabel: "Compare With",
+    comparePairLabel: "Pair",
+    compareRiskLabel: "Risk Delta",
+    compareTmaxLabel: "Tmax Delta",
+    compareAlertLabel: "Alert Pair",
   },
   hi: {
     heroKicker: "Live Heat Intelligence",
@@ -210,6 +230,13 @@ const labels = {
     solarSunriseLabel: "Sunrise",
     solarSunsetLabel: "Sunset",
     solarDaylightPrefix: "Daylight",
+    tickerLabel: "Live Heatwave Feed",
+    compareTitle: "Jila Compare",
+    compareLabel: "Compare With",
+    comparePairLabel: "Pair",
+    compareRiskLabel: "Risk Delta",
+    compareTmaxLabel: "Tmax Delta",
+    compareAlertLabel: "Alert Pair",
   },
 };
 
@@ -219,6 +246,8 @@ let mixChart = null;
 let map = null;
 let markerLayer = null;
 let revealObserver = null;
+let lastDayItems = [];
+let lastSelectedDistrict = "";
 const isHi = () => currentLang === "hi";
 
 function alertClass(level) {
@@ -284,6 +313,13 @@ function weatherSymbol(tmax, rain, alert) {
   return "MILD";
 }
 
+function weatherIconDisplay(symbol) {
+  if (symbol === "HEAT" || symbol === "VERY HOT") return "SUN";
+  if (symbol === "RAIN") return "RAIN";
+  if (symbol === "HOT") return "WARM";
+  return "MILD";
+}
+
 function clamp(x, lo, hi) {
   return Math.max(lo, Math.min(hi, x));
 }
@@ -345,6 +381,8 @@ function computeSunTimes(dateStr, lat, lon) {
     sunriseText: formatHourMin(sunriseIST),
     sunsetText: formatHourMin(sunsetIST),
     daylightHours: daylightMin / 60,
+    sunriseMin: sunriseIST,
+    sunsetMin: sunsetIST,
   };
 }
 
@@ -588,6 +626,13 @@ function applyLanguage() {
   setText("solarKicker", t.solarKicker);
   setText("solarSunriseLabel", t.solarSunriseLabel);
   setText("solarSunsetLabel", t.solarSunsetLabel);
+  setText("tickerLabel", t.tickerLabel);
+  setText("compareTitle", t.compareTitle);
+  setText("compareLabel", t.compareLabel);
+  setText("comparePairLabel", t.comparePairLabel);
+  setText("compareRiskLabel", t.compareRiskLabel);
+  setText("compareTmaxLabel", t.compareTmaxLabel);
+  setText("compareAlertLabel", t.compareAlertLabel);
 }
 
 function setFsButtonText() {
@@ -646,6 +691,66 @@ function setMixChips(mix) {
     .join("");
 }
 
+function formatSigned(x, decimals = 2) {
+  const n = Number(x || 0);
+  const sign = n > 0 ? "+" : "";
+  return `${sign}${n.toFixed(decimals)}`;
+}
+
+function renderTicker(items, date) {
+  if (!els.tickerTrack) return;
+  const sorted = [...items].sort((a, b) => (b.risk_score_next_day || 0) - (a.risk_score_next_day || 0));
+  const top = sorted.slice(0, 5);
+  const total = sorted.length;
+  const red = sorted.filter((x) => String(x.alert_level_next_day).toUpperCase() === "RED").length;
+  const orange = sorted.filter((x) => String(x.alert_level_next_day).toUpperCase() === "ORANGE").length;
+  const yel = sorted.filter((x) => String(x.alert_level_next_day).toUpperCase() === "YELLOW").length;
+  const snippets = top.map((r) => `${r.district} ${r.alert_level_next_day} (${(r.risk_score_next_day || 0).toFixed(1)})`);
+  const base = `Date ${date} | Districts ${total} | RED ${red} | ORANGE ${orange} | YELLOW ${yel}`;
+  const text = `${base} | Top heat districts: ${snippets.join(" | ")} | ${base} | Top heat districts: ${snippets.join(" | ")}`;
+  els.tickerTrack.textContent = text;
+}
+
+function ensureCompareSelection(metaDistricts) {
+  if (!els.compareDistrict) return;
+  const current = els.district.value;
+  const previous = els.compareDistrict.value;
+  els.compareDistrict.innerHTML = metaDistricts.map((d) => `<option value="${d}">${d}</option>`).join("");
+  if (previous && previous !== current && metaDistricts.includes(previous)) {
+    els.compareDistrict.value = previous;
+    return;
+  }
+  const fallback = metaDistricts.find((d) => d !== current) || current;
+  els.compareDistrict.value = fallback;
+}
+
+function renderComparePanel(currentDistrict, dayItems) {
+  if (!els.compareDistrict || !dayItems?.length) return;
+  if (els.compareDistrict.value === currentDistrict) {
+    const alt = Array.from(els.compareDistrict.options).map((o) => o.value).find((d) => d !== currentDistrict);
+    if (alt) els.compareDistrict.value = alt;
+  }
+  const cmpDistrict = els.compareDistrict.value;
+  const a = dayItems.find((x) => x.district === currentDistrict);
+  const b = dayItems.find((x) => x.district === cmpDistrict);
+  if (!a || !b) return;
+
+  const riskDelta = (a.risk_score_next_day || 0) - (b.risk_score_next_day || 0);
+  const tmaxDelta = (a.tmax_c || 0) - (b.tmax_c || 0);
+  const pair = `${currentDistrict} vs ${cmpDistrict}`;
+  const alertPair = `${a.alert_level_next_day} vs ${b.alert_level_next_day}`;
+
+  els.comparePairValue.textContent = pair;
+  els.compareRiskValue.textContent = formatSigned(riskDelta, 2);
+  els.compareTmaxValue.textContent = `${formatSigned(tmaxDelta, 1)} deg C`;
+  els.compareAlertValue.textContent = alertPair;
+
+  els.compareRiskValue.classList.remove("compare-pos", "compare-neg");
+  els.compareTmaxValue.classList.remove("compare-pos", "compare-neg");
+  els.compareRiskValue.classList.add(riskDelta >= 0 ? "compare-pos" : "compare-neg");
+  els.compareTmaxValue.classList.add(tmaxDelta >= 0 ? "compare-pos" : "compare-neg");
+}
+
 function fillSelectors(meta) {
   els.district.innerHTML = meta.districts
     .map((d) => `<option value="${d}">${d}</option>`)
@@ -654,6 +759,7 @@ function fillSelectors(meta) {
     .map((d) => `<option value="${d}">${d}</option>`)
     .join("");
   els.date.value = meta.latest_date;
+  ensureCompareSelection(meta.districts || []);
   const t = labels[currentLang];
   els.forecastWindow.textContent = `${t.forecastPrefix} ${meta.forecast_start} to ${meta.forecast_end}`;
   setMixChips(meta.alert_mix_latest);
@@ -800,6 +906,8 @@ function renderSolarCard(current, date) {
     els.solarSunset.textContent = "--";
     els.solarDaylight.textContent = `${t.solarDaylightPrefix}: --`;
     els.solarArcFill.style.width = "50%";
+    document.body.classList.remove("theme-day", "theme-dusk", "theme-night");
+    document.body.classList.add("theme-night");
     return;
   }
 
@@ -808,6 +916,23 @@ function renderSolarCard(current, date) {
   els.solarDaylight.textContent = `${t.solarDaylightPrefix}: ${sun.daylightHours.toFixed(1)}h`;
   const daylightPct = clamp((sun.daylightHours - 9) / 5, 0, 1) * 100;
   els.solarArcFill.style.width = `${daylightPct.toFixed(0)}%`;
+
+  const nowIST = new Date();
+  const hh = Number(new Intl.DateTimeFormat("en-US", { hour: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }).format(nowIST));
+  const mm = Number(new Intl.DateTimeFormat("en-US", { minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }).format(nowIST));
+  const nowMin = hh * 60 + mm;
+
+  const sunriseMin = ((sun.sunriseMin % (24 * 60)) + (24 * 60)) % (24 * 60);
+  const sunsetMin = ((sun.sunsetMin % (24 * 60)) + (24 * 60)) % (24 * 60);
+
+  document.body.classList.remove("theme-day", "theme-dusk", "theme-night");
+  if (nowMin >= sunriseMin + 45 && nowMin <= sunsetMin - 60) {
+    document.body.classList.add("theme-day");
+  } else if ((nowMin >= sunriseMin - 30 && nowMin < sunriseMin + 45) || (nowMin > sunsetMin - 60 && nowMin <= sunsetMin + 50)) {
+    document.body.classList.add("theme-dusk");
+  } else {
+    document.body.classList.add("theme-night");
+  }
 }
 
 function renderRiskMeter(riskScore) {
@@ -876,7 +1001,12 @@ function renderCurrent(current, comparison) {
   els.rankText.textContent = String(current.rank_within_date);
 
   const symbol = weatherSymbol(current.tmax_c, current.rain_mm, current.alert_level_next_day);
-  els.weatherIcon.textContent = symbol;
+  els.weatherIcon.classList.remove("weather-hot", "weather-rain", "weather-mild", "weather-cloud");
+  if (symbol === "HEAT" || symbol === "VERY HOT") els.weatherIcon.classList.add("weather-hot");
+  else if (symbol === "RAIN") els.weatherIcon.classList.add("weather-rain");
+  else if (symbol === "HOT") els.weatherIcon.classList.add("weather-cloud");
+  else els.weatherIcon.classList.add("weather-mild");
+  els.weatherIcon.textContent = weatherIconDisplay(symbol);
   els.weatherTag.textContent = weatherTag(current.tmax_c, current.rain_mm, current.alert_level_next_day);
   els.tipText.textContent = healthTip(current.alert_level_next_day);
 
@@ -888,7 +1018,7 @@ function renderCurrent(current, comparison) {
 
 function setupRevealAnimations() {
   const candidates = document.querySelectorAll(
-    ".hero, .controls, .metric-card, .simple-card, .grid-two .card, .faq-card, .status-item"
+    ".ticker, .hero, .controls, .compare, .metric-card, .simple-card, .grid-two .card, .faq-card, .status-item"
   );
   candidates.forEach((el, idx) => {
     el.classList.add("reveal-up");
@@ -930,6 +1060,10 @@ async function loadSelection() {
     renderTrend(districtRes.trend);
     renderMap(dayRes.items || []);
     renderMixChart(dayRes.alert_mix || {});
+    lastDayItems = dayRes.items || [];
+    lastSelectedDistrict = district;
+    renderTicker(lastDayItems, date);
+    renderComparePanel(district, lastDayItems);
     await loadRisers();
     els.downloadDayBtn.href = `/download/day.csv?date=${encodeURIComponent(date)}`;
   } finally {
@@ -952,6 +1086,10 @@ async function init() {
 
 els.district.addEventListener("change", loadSelection);
 els.date.addEventListener("change", loadSelection);
+els.compareDistrict.addEventListener("change", () => {
+  if (!lastDayItems.length || !lastSelectedDistrict) return;
+  renderComparePanel(lastSelectedDistrict, lastDayItems);
+});
 els.refresh.addEventListener("click", async () => {
   try {
     await init();
