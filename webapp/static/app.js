@@ -67,6 +67,12 @@ const els = {
   districtLabel: document.getElementById("districtLabel"),
   dateLabel: document.getElementById("dateLabel"),
   whyLogic: document.getElementById("whyLogic"),
+  statusUpdatedLabel: document.getElementById("statusUpdatedLabel"),
+  statusApiLabel: document.getElementById("statusApiLabel"),
+  statusSourceLabel: document.getElementById("statusSourceLabel"),
+  statusUpdatedValue: document.getElementById("statusUpdatedValue"),
+  statusApiValue: document.getElementById("statusApiValue"),
+  statusSourceValue: document.getElementById("statusSourceValue"),
 };
 
 const labels = {
@@ -124,6 +130,9 @@ const labels = {
     forecastPrefix: "Forecast window:",
     formulaLine: "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)",
     tempOnlyNote: "Note: Higher temperature can increase risk, but final color also depends on model probability and policy thresholds.",
+    statusUpdatedLabel: "Last Updated",
+    statusApiLabel: "API Status",
+    statusSourceLabel: "Source Date",
   },
   hi: {
     heroKicker: "Live Heat Intelligence",
@@ -179,6 +188,9 @@ const labels = {
     forecastPrefix: "Forecast window:",
     formulaLine: "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)",
     tempOnlyNote: "Note: Temperature badhne se risk badh sakta hai, lekin final color model probability aur policy thresholds par bhi depend karta hai.",
+    statusUpdatedLabel: "Last Updated",
+    statusApiLabel: "API Status",
+    statusSourceLabel: "Source Date",
   },
 };
 
@@ -447,6 +459,9 @@ function applyLanguage() {
   setText("faqQ4", t.faqQ4);
   setText("faqA4", t.faqA4);
   setText("whyLogic", t.whyLogic);
+  setText("statusUpdatedLabel", t.statusUpdatedLabel);
+  setText("statusApiLabel", t.statusApiLabel);
+  setText("statusSourceLabel", t.statusSourceLabel);
 }
 
 function setFsButtonText() {
@@ -459,9 +474,31 @@ function setFsButtonText() {
 }
 
 async function jget(url) {
-  const r = await fetch(url);
+  const r = await fetch(url, {
+    cache: "no-store",
+    headers: { "Cache-Control": "no-cache" },
+  });
   if (!r.ok) throw new Error(`HTTP ${r.status}: ${url}`);
   return r.json();
+}
+
+function formatApiStatus(apiStatus, pipelineStatus) {
+  const a = String(apiStatus || "").toLowerCase();
+  const p = String(pipelineStatus || "").toLowerCase();
+  if (a === "success") return "live";
+  if (a === "stale_fallback") return "fallback";
+  if (p === "success" || p === "partial_success") return "pipeline-ok";
+  return a || p || "unknown";
+}
+
+function renderStatus(meta) {
+  const updated = meta.live_file_updated_at_utc || "-";
+  const sourceDate = meta.api_source_date || meta.latest_date || "-";
+  const apiStatus = formatApiStatus(meta.api_status, meta.pipeline_status);
+
+  els.statusUpdatedValue.textContent = updated;
+  els.statusApiValue.textContent = apiStatus;
+  els.statusSourceValue.textContent = sourceDate;
 }
 
 function setMixChips(mix) {
@@ -697,6 +734,7 @@ async function loadSelection() {
 
 async function init() {
   const meta = await jget("/api/meta");
+  renderStatus(meta);
   fillSelectors(meta);
   await loadTop10();
   await loadSelection();
