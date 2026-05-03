@@ -200,7 +200,7 @@ def api_day():
 
 @app.route("/api/district")
 def api_district():
-    live, _, _ = get_frames()
+    live, _, coords = get_frames()
     district = request.args.get("district", "").strip().title()
     date_s = request.args.get("date", "")
     if not district:
@@ -244,6 +244,14 @@ def api_district():
             "risk_delta": curr_risk - prev_risk,
         }
 
+    lat = 0.0
+    lon = 0.0
+    if not coords.empty:
+        c = coords[coords["district"] == district]
+        if not c.empty:
+            lat = _safe_float(c.iloc[0].get("latitude", 0))
+            lon = _safe_float(c.iloc[0].get("longitude", 0))
+
     return jsonify(
         {
             "district": district,
@@ -259,6 +267,8 @@ def api_district():
                 "confidence_tag": row.get("confidence_tag", ""),
                 "heat_stress_score": _safe_float(row.get("heat_stress_score", 0)),
                 "rank_within_date": int(row["rank_within_date"]),
+                "latitude": lat,
+                "longitude": lon,
             },
             "trend": trend,
             "comparison": comparison,
