@@ -32,7 +32,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Install pipeline dependencies
         run: |
@@ -71,3 +71,17 @@ jobs:
             git commit -m "Auto update heat alerts (${ts})"
             git push
           fi
+
+      - name: Trigger Render deploy hook
+        if: ${{ success() && secrets.RENDER_DEPLOY_HOOK_URL != '' }}
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Triggering Render deploy hook..."
+          curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"
+          echo "Render deploy hook triggered."
+
+      - name: Skip Render deploy hook (secret missing)
+        if: ${{ success() && secrets.RENDER_DEPLOY_HOOK_URL == '' }}
+        run: |
+          echo "RENDER_DEPLOY_HOOK_URL secret not set. Skipping Render deploy hook."
