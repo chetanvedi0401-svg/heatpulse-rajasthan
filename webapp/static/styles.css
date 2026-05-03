@@ -135,6 +135,30 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
 }
 .btn-ghost:hover{background:rgba(30,64,175,.35)}
 
+.status-strip{
+  margin-top:2px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:6px;
+}
+.status-item{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:7px 9px;
+  background:rgba(10,18,34,.72);
+}
+.status-label{
+  display:block;
+  color:#9eb4d6;
+  font-size:11px;
+  line-height:1.2;
+}
+.status-item strong{
+  color:#f5fbff;
+  font-size:12px;
+  line-height:1.2;
+}
+
 .card{
   border:1px solid var(--line);
   border-radius:16px;
