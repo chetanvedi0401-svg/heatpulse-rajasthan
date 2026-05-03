@@ -72,7 +72,7 @@ jobs:
             git push
           fi
 
-          - name: Trigger Render deploy hook (if configured)
+             - name: Trigger Render deploy hook (if configured)
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
