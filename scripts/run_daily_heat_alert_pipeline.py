@@ -492,6 +492,67 @@ def append_run_log(entry):
     return run_log_file
 
 
+def update_api_failsafe(run_log_file, run_time, window=2):
+    """
+    Raise an alert when live API has not succeeded for N consecutive runs.
+    This is a lightweight fail-safe note for ops monitoring.
+    """
+    alert_file = DOCS / "step11_api_failsafe_alert.txt"
+    event_file = DOCS / "step11_api_failsafe_events.csv"
+    fail_like = {"stale_fallback", "failed"}
+
+    logs = pd.read_csv(run_log_file)
+    statuses = logs["api_status"].astype(str).str.strip().str.lower().tolist() if "api_status" in logs.columns else []
+    recent = statuses[-window:] if len(statuses) >= window else statuses
+    consecutive_fail = len(recent) == window and all(s in fail_like for s in recent)
+    current_status = statuses[-1] if statuses else "unknown"
+
+    if consecutive_fail:
+        state = "ALERT"
+        note = (
+            f"API FAILSAFE ALERT ({run_time})\n"
+            f"Condition: Last {window} runs are non-live ({', '.join(recent)}).\n"
+            "Impact: Pipeline is running on fallback/no-live API.\n"
+            "Action: Check API source availability and quality gate logs (docs/step10_api_quality_gate_report.csv).\n"
+        )
+    elif current_status == "success":
+        state = "OK"
+        note = (
+            f"API FAILSAFE STATUS OK ({run_time})\n"
+            "Condition: Latest run has live API success.\n"
+            "Action: No intervention needed.\n"
+        )
+    else:
+        state = "WATCH"
+        note = (
+            f"API FAILSAFE WATCH ({run_time})\n"
+            f"Condition: Latest status is {current_status}. Waiting for confirmation over {window} runs.\n"
+            "Action: Monitor next scheduled run.\n"
+        )
+
+    alert_file.write_text(note, encoding="utf-8")
+
+    event_row = pd.DataFrame(
+        [
+            {
+                "run_time": run_time,
+                "failsafe_state": state,
+                "latest_api_status": current_status,
+                "recent_api_statuses": "|".join(recent),
+                "window_runs": int(window),
+                "consecutive_non_live_detected": bool(consecutive_fail),
+            }
+        ]
+    )
+    if event_file.exists():
+        old = pd.read_csv(event_file)
+        if not old.empty and str(old.iloc[-1].get("failsafe_state", "")).strip().upper() == state:
+            return {"failsafe_state": state, "alert_file": str(alert_file), "event_file": str(event_file)}
+        event_row = pd.concat([old, event_row], ignore_index=True)
+    event_row.to_csv(event_file, index=False)
+    return {"failsafe_state": state, "alert_file": str(alert_file), "event_file": str(event_file)}
+
+
 def main():
     run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
@@ -608,6 +669,7 @@ def main():
             "message": f"{api_quality_message}\n{api_message}",
         }
         run_log_file = append_run_log(entry)
+        failsafe = update_api_failsafe(run_log_file, run_time, window=2)
 
         print("Automation run complete.")
         print("Status:", status)
@@ -623,6 +685,8 @@ def main():
                 print("API mode: stale fallback (last available API file used).")
         else:
             print("API output unavailable in this run.")
+        print("API fail-safe state:", failsafe["failsafe_state"])
+        print("API fail-safe note:", failsafe["alert_file"])
         print("Log:", run_log_file)
     except Exception:
         err = traceback.format_exc()
@@ -645,8 +709,11 @@ def main():
                 "message": err,
             }
         )
+        failsafe = update_api_failsafe(run_log_file, run_time, window=2)
         print("Automation run failed.")
         print(err)
+        print("API fail-safe state:", failsafe["failsafe_state"])
+        print("API fail-safe note:", failsafe["alert_file"])
         print("Log:", run_log_file)
         raise
 
