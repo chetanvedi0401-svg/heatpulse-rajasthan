@@ -199,6 +199,7 @@ let trendChart = null;
 let mixChart = null;
 let map = null;
 let markerLayer = null;
+let revealObserver = null;
 const isHi = () => currentLang === "hi";
 
 function alertClass(level) {
@@ -215,6 +216,36 @@ function alertColor(level) {
   if (x === "ORANGE") return "#e8590c";
   if (x === "YELLOW") return "#c99700";
   return "#2f9e44";
+}
+
+function setRefreshLoading(flag) {
+  if (flag) {
+    els.refresh.classList.add("is-loading");
+  } else {
+    els.refresh.classList.remove("is-loading");
+  }
+}
+
+function animateNumber(el, target, decimals = 1) {
+  const current = Number.parseFloat(String(el.textContent).replace(/[^\d.-]/g, ""));
+  const start = Number.isFinite(current) ? current : target;
+  const duration = 520;
+  const startTs = performance.now();
+
+  const tick = (ts) => {
+    const t = Math.min(1, (ts - startTs) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const value = start + (target - start) * eased;
+    el.textContent = value.toFixed(decimals);
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function popMetric(el) {
+  el.classList.remove("value-pop");
+  void el.offsetWidth;
+  el.classList.add("value-pop");
 }
 
 function weatherSymbol(tmax, rain, alert) {
@@ -499,6 +530,18 @@ function renderStatus(meta) {
   els.statusUpdatedValue.textContent = updated;
   els.statusApiValue.textContent = apiStatus;
   els.statusSourceValue.textContent = sourceDate;
+
+  const apiItem = els.statusApiValue.closest(".status-item");
+  if (apiItem) {
+    apiItem.classList.remove("status-live", "status-fallback", "status-unknown");
+    if (apiStatus === "live") {
+      apiItem.classList.add("status-live");
+    } else if (apiStatus === "fallback") {
+      apiItem.classList.add("status-fallback");
+    } else {
+      apiItem.classList.add("status-unknown");
+    }
+  }
 }
 
 function setMixChips(mix) {
@@ -569,6 +612,7 @@ function renderMixChart(mix) {
       datasets: [{ data, backgroundColor: ["#e03131", "#e8590c", "#c99700", "#2f9e44"] }],
     },
     options: {
+      animation: { duration: 700, easing: "easeOutQuart" },
       plugins: { legend: { labels: { color: "#dbeafe" } } },
     },
   });
@@ -626,6 +670,7 @@ function renderTrend(trend) {
       }],
     },
     options: {
+      animation: { duration: 760, easing: "easeOutQuart" },
       plugins: { legend: { labels: { color: "#dbeafe" } } },
       scales: {
         x: { ticks: { color: "#cbd5e1" }, grid: { color: "rgba(255,255,255,.08)" } },
@@ -694,12 +739,21 @@ function renderWhyPanel(current, comparison) {
 }
 
 function renderCurrent(current, comparison) {
-  els.mTmax.textContent = current.tmax_c.toFixed(1);
-  els.mTmin.textContent = current.tmin_c.toFixed(1);
-  els.mRain.textContent = current.rain_mm.toFixed(1);
-  els.mRisk.textContent = current.risk_score_next_day.toFixed(2);
+  animateNumber(els.mTmax, current.tmax_c, 1);
+  animateNumber(els.mTmin, current.tmin_c, 1);
+  animateNumber(els.mRain, current.rain_mm, 1);
+  animateNumber(els.mRisk, current.risk_score_next_day, 2);
+  popMetric(els.mTmax);
+  popMetric(els.mTmin);
+  popMetric(els.mRain);
+  popMetric(els.mRisk);
+
   els.alertBadge.className = `alert-badge ${alertClass(current.alert_level_next_day)}`;
   els.alertBadge.textContent = current.alert_level_next_day;
+  const alertUpper = String(current.alert_level_next_day || "GREEN").toUpperCase();
+  if (alertUpper === "RED") els.alertBadge.classList.add("hot-motion");
+  else if (alertUpper === "ORANGE" || alertUpper === "YELLOW") els.alertBadge.classList.add("warn-motion");
+  else els.alertBadge.classList.add("calm-motion");
   els.actionText.textContent = current.recommended_action;
   els.probText.textContent = current.pred_prob_critical_t1.toFixed(4);
   els.confText.textContent = current.confidence_tag;
@@ -714,6 +768,35 @@ function renderCurrent(current, comparison) {
   renderSimpleCards(current);
   renderPlanner(current);
   renderWhyPanel(current, comparison);
+}
+
+function setupRevealAnimations() {
+  const candidates = document.querySelectorAll(
+    ".hero, .controls, .metric-card, .simple-card, .grid-two .card, .faq-card, .status-item"
+  );
+  candidates.forEach((el, idx) => {
+    el.classList.add("reveal-up");
+    el.style.transitionDelay = `${Math.min(idx * 20, 220)}ms`;
+  });
+
+  if (!("IntersectionObserver" in window)) {
+    candidates.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08 }
+  );
+
+  candidates.forEach((el) => revealObserver.observe(el));
 }
 
 async function loadSelection() {
@@ -733,6 +816,7 @@ async function loadSelection() {
 }
 
 async function init() {
+  setRefreshLoading(true);
   const meta = await jget("/api/meta");
   renderStatus(meta);
   fillSelectors(meta);
@@ -740,12 +824,17 @@ async function init() {
   await loadSelection();
   applyLanguage();
   setFsButtonText();
+  setRefreshLoading(false);
 }
 
 els.district.addEventListener("change", loadSelection);
 els.date.addEventListener("change", loadSelection);
 els.refresh.addEventListener("click", async () => {
-  await init();
+  try {
+    await init();
+  } finally {
+    setRefreshLoading(false);
+  }
 });
 
 els.langBtn.addEventListener("click", async () => {
@@ -766,7 +855,10 @@ els.fsBtn.addEventListener("click", async () => {
 
 document.addEventListener("fullscreenchange", setFsButtonText);
 
+setupRevealAnimations();
+
 init().catch((e) => {
   console.error(e);
+  setRefreshLoading(false);
   alert("Failed to load dashboard data. Check backend server and data files.");
 });
