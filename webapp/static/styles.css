@@ -433,6 +433,36 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
 
 #map{height:280px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
 
+.panel-shell{position:relative}
+.chart-shell{min-height:230px}
+.table-shell{min-height:320px}
+.panel-skeleton{
+  position:absolute;
+  inset:0;
+  border-radius:12px;
+  border:1px solid rgba(125,211,252,.18);
+  background:
+    linear-gradient(110deg, rgba(255,255,255,.04) 20%, rgba(125,211,252,.18) 40%, rgba(255,255,255,.04) 60%),
+    linear-gradient(180deg, rgba(9,20,40,.92), rgba(10,26,48,.92));
+  background-size:210% 100%, 100% 100%;
+  background-position:120% 0, 0 0;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .2s ease, visibility .2s ease;
+}
+.table-shell .panel-skeleton{
+  border-radius:10px;
+}
+.panel-shell.is-loading .panel-skeleton{
+  opacity:1;
+  visibility:visible;
+  animation:skeletonSweep 1.2s linear infinite;
+}
+@keyframes skeletonSweep{
+  to{background-position:-120% 0, 0 0}
+}
+
 table{width:100%;border-collapse:collapse}
 th,td{padding:8px;border-bottom:1px solid var(--line);font-size:13px;text-align:left}
 th{color:#9fb6d8}
