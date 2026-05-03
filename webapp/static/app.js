@@ -77,6 +77,13 @@ const els = {
   trendShell: document.getElementById("trendShell"),
   topShell: document.getElementById("topShell"),
   riserShell: document.getElementById("riserShell"),
+  solarKicker: document.getElementById("solarKicker"),
+  solarSunriseLabel: document.getElementById("solarSunriseLabel"),
+  solarSunsetLabel: document.getElementById("solarSunsetLabel"),
+  solarSunrise: document.getElementById("solarSunrise"),
+  solarSunset: document.getElementById("solarSunset"),
+  solarDaylight: document.getElementById("solarDaylight"),
+  solarArcFill: document.getElementById("solarArcFill"),
 };
 
 const labels = {
@@ -137,6 +144,10 @@ const labels = {
     statusUpdatedLabel: "Last Updated",
     statusApiLabel: "API Status",
     statusSourceLabel: "Source Date",
+    solarKicker: "Sun Window",
+    solarSunriseLabel: "Sunrise",
+    solarSunsetLabel: "Sunset",
+    solarDaylightPrefix: "Daylight",
   },
   hi: {
     heroKicker: "Live Heat Intelligence",
@@ -195,6 +206,10 @@ const labels = {
     statusUpdatedLabel: "Last Updated",
     statusApiLabel: "API Status",
     statusSourceLabel: "Source Date",
+    solarKicker: "Surya Window",
+    solarSunriseLabel: "Sunrise",
+    solarSunsetLabel: "Sunset",
+    solarDaylightPrefix: "Daylight",
   },
 };
 
@@ -267,6 +282,70 @@ function weatherSymbol(tmax, rain, alert) {
   if (tmax >= 42) return "VERY HOT";
   if (tmax >= 38) return "HOT";
   return "MILD";
+}
+
+function clamp(x, lo, hi) {
+  return Math.max(lo, Math.min(hi, x));
+}
+
+function formatHourMin(totalMinutes) {
+  let m = Math.round(totalMinutes) % (24 * 60);
+  if (m < 0) m += 24 * 60;
+  const hh24 = Math.floor(m / 60);
+  const mm = m % 60;
+  const ampm = hh24 >= 12 ? "PM" : "AM";
+  const hh12 = ((hh24 + 11) % 12) + 1;
+  return `${hh12}:${String(mm).padStart(2, "0")} ${ampm}`;
+}
+
+function computeSunTimes(dateStr, lat, lon) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) return null;
+  const dt = new Date(`${dateStr}T00:00:00`);
+  if (Number.isNaN(dt.getTime())) return null;
+  const yearStart = new Date(dt.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((dt - yearStart) / 86400000);
+
+  const gamma = (2 * Math.PI / 365) * (dayOfYear - 1);
+  const eqTime = 229.18 * (
+    0.000075
+    + 0.001868 * Math.cos(gamma)
+    - 0.032077 * Math.sin(gamma)
+    - 0.014615 * Math.cos(2 * gamma)
+    - 0.040849 * Math.sin(2 * gamma)
+  );
+  const decl = (
+    0.006918
+    - 0.399912 * Math.cos(gamma)
+    + 0.070257 * Math.sin(gamma)
+    - 0.006758 * Math.cos(2 * gamma)
+    + 0.000907 * Math.sin(2 * gamma)
+    - 0.002697 * Math.cos(3 * gamma)
+    + 0.00148 * Math.sin(3 * gamma)
+  );
+
+  const latRad = lat * Math.PI / 180;
+  const zenith = 90.833 * Math.PI / 180;
+  const cosH = (Math.cos(zenith) / (Math.cos(latRad) * Math.cos(decl))) - Math.tan(latRad) * Math.tan(decl);
+  if (cosH > 1 || cosH < -1) return null;
+
+  const hourAngle = Math.acos(clamp(cosH, -1, 1));
+  const hourDeg = hourAngle * 180 / Math.PI;
+
+  // UTC minutes of solar events
+  const solarNoonUTC = 720 - 4 * lon - eqTime;
+  const sunriseUTC = solarNoonUTC - 4 * hourDeg;
+  const sunsetUTC = solarNoonUTC + 4 * hourDeg;
+
+  // IST (+330 min)
+  const sunriseIST = sunriseUTC + 330;
+  const sunsetIST = sunsetUTC + 330;
+  const daylightMin = ((sunsetIST - sunriseIST) + 24 * 60) % (24 * 60);
+
+  return {
+    sunriseText: formatHourMin(sunriseIST),
+    sunsetText: formatHourMin(sunsetIST),
+    daylightHours: daylightMin / 60,
+  };
 }
 
 function weatherTag(tmax, rain, alert) {
@@ -506,6 +585,9 @@ function applyLanguage() {
   setText("statusUpdatedLabel", t.statusUpdatedLabel);
   setText("statusApiLabel", t.statusApiLabel);
   setText("statusSourceLabel", t.statusSourceLabel);
+  setText("solarKicker", t.solarKicker);
+  setText("solarSunriseLabel", t.solarSunriseLabel);
+  setText("solarSunsetLabel", t.solarSunsetLabel);
 }
 
 function setFsButtonText() {
@@ -707,6 +789,27 @@ function renderPlanner(current) {
   els.simpleOrs.textContent = `${t.orsPrefix} ${plan.ors}`;
 }
 
+function renderSolarCard(current, date) {
+  const t = labels[currentLang];
+  const lat = Number(current.latitude || 0);
+  const lon = Number(current.longitude || 0);
+  const sun = computeSunTimes(date, lat, lon);
+
+  if (!sun) {
+    els.solarSunrise.textContent = "--";
+    els.solarSunset.textContent = "--";
+    els.solarDaylight.textContent = `${t.solarDaylightPrefix}: --`;
+    els.solarArcFill.style.width = "50%";
+    return;
+  }
+
+  els.solarSunrise.textContent = sun.sunriseText;
+  els.solarSunset.textContent = sun.sunsetText;
+  els.solarDaylight.textContent = `${t.solarDaylightPrefix}: ${sun.daylightHours.toFixed(1)}h`;
+  const daylightPct = clamp((sun.daylightHours - 9) / 5, 0, 1) * 100;
+  els.solarArcFill.style.width = `${daylightPct.toFixed(0)}%`;
+}
+
 function renderRiskMeter(riskScore) {
   const maxRef = 70;
   const pct = Math.max(0, Math.min(100, (riskScore / maxRef) * 100));
@@ -823,6 +926,7 @@ async function loadSelection() {
     ]);
 
     renderCurrent(districtRes.current, districtRes.comparison || null);
+    renderSolarCard(districtRes.current, date);
     renderTrend(districtRes.trend);
     renderMap(dayRes.items || []);
     renderMixChart(dayRes.alert_mix || {});
