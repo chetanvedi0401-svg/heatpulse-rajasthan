@@ -1,4 +1,4 @@
-API FAILSAFE ALERT (2026-05-03 17:40:21)
+API FAILSAFE ALERT (2026-05-03 17:49:14)
 Condition: Last 2 runs are non-live (stale_fallback, stale_fallback).
 Impact: Pipeline is running on fallback/no-live API.
 Action: Check API source availability and quality gate logs (docs/step10_api_quality_gate_report.csv).
