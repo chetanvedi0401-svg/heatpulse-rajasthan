@@ -24,6 +24,24 @@ body{
     linear-gradient(180deg, #040a17 0%, #071229 100%);
   color:var(--text);
 }
+body.theme-day{
+  background:
+    radial-gradient(1200px 600px at -8% -10%, rgba(56,189,248,.14), transparent 60%),
+    radial-gradient(900px 520px at 105% 2%, rgba(14,165,233,.16), transparent 62%),
+    linear-gradient(180deg, #06122a 0%, #0a1f3f 100%);
+}
+body.theme-dusk{
+  background:
+    radial-gradient(1200px 600px at -8% -10%, rgba(251,146,60,.16), transparent 60%),
+    radial-gradient(900px 520px at 105% 2%, rgba(236,72,153,.13), transparent 62%),
+    linear-gradient(180deg, #140b24 0%, #1c1f42 100%);
+}
+body.theme-night{
+  background:
+    radial-gradient(1200px 600px at -8% -10%, rgba(59,130,246,.12), transparent 60%),
+    radial-gradient(900px 520px at 105% 2%, rgba(34,211,238,.1), transparent 62%),
+    linear-gradient(180deg, #030814 0%, #050f24 100%);
+}
 .bg-glow{position:fixed; border-radius:50%; filter:blur(90px); z-index:-1}
 .bg-glow.one{width:520px;height:520px;left:-120px;top:-120px;background:rgba(59,130,246,.2);animation:floatGlowA 14s ease-in-out infinite}
 .bg-glow.two{width:420px;height:420px;right:-120px;top:60px;background:rgba(34,211,238,.16);animation:floatGlowB 16s ease-in-out infinite}
@@ -91,6 +109,43 @@ body{
   transition:.2s ease;
 }
 .pill-btn:hover{transform:translateY(-1px);background:rgba(2,132,199,.36)}
+
+.ticker{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+  padding:10px 12px;
+  overflow:hidden;
+}
+.ticker-label{
+  color:#8bdcff;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.75px;
+  font-weight:800;
+}
+.ticker-window{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(148,163,184,.25);
+  border-radius:999px;
+  background:rgba(10,20,38,.6);
+  min-height:34px;
+}
+.ticker-track{
+  white-space:nowrap;
+  display:inline-block;
+  min-width:100%;
+  padding:7px 12px;
+  color:#dbeafe;
+  animation:tickerRoll 30s linear infinite;
+}
+@keyframes tickerRoll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-55%)}
+}
 
 .hero{
   display:grid;
@@ -227,6 +282,45 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
 .card:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(0,0,0,.26);border-color:rgba(125,211,252,.35)}
 
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.compare{
+  margin-bottom:12px;
+}
+.compare-head{
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:10px;
+}
+.compare-head h3{
+  margin:0;
+  font-size:20px;
+}
+.compare-field{min-width:260px}
+.compare-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.compare-box{
+  border:1px solid rgba(148,163,184,.22);
+  border-radius:12px;
+  padding:10px;
+  background:linear-gradient(155deg,rgba(8,20,40,.8),rgba(11,32,58,.8));
+}
+.compare-box span{
+  display:block;
+  color:#9fb6d8;
+  font-size:11px;
+}
+.compare-box strong{
+  display:block;
+  margin-top:4px;
+  color:#f5fbff;
+  font-size:16px;
+}
+.compare-pos{color:#22c55e !important}
+.compare-neg{color:#f97316 !important}
 .field label{display:block;font-size:12px;color:#b5caea;margin-bottom:6px}
 .field select{
   width:100%;
@@ -329,6 +423,10 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
   box-shadow:0 0 24px rgba(59,130,246,.6);
   animation:pulse 2.4s infinite;
 }
+.weather-icon.weather-hot{background:radial-gradient(circle at 30% 30%, #fb923c, #dc2626)}
+.weather-icon.weather-rain{background:radial-gradient(circle at 30% 30%, #67e8f9, #0369a1)}
+.weather-icon.weather-mild{background:radial-gradient(circle at 30% 30%, #93c5fd, #1d4ed8)}
+.weather-icon.weather-cloud{background:radial-gradient(circle at 30% 30%, #cbd5e1, #334155)}
 .weather-title{font-weight:700;color:#dbeafe}
 .weather-tag{font-size:12px;color:#9fb6d8}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
@@ -554,9 +652,13 @@ details[open] p{animation:faqFade .22s ease}
 }
 
 @media (max-width: 980px){
+  .ticker{grid-template-columns:1fr}
   .hero{grid-template-columns:1fr;min-height:312px}
   .hero::after{height:150px}
   .controls{grid-template-columns:1fr}
+  .compare-head{flex-direction:column;align-items:stretch}
+  .compare-field{min-width:unset}
+  .compare-grid{grid-template-columns:1fr 1fr}
   .metrics{grid-template-columns:1fr 1fr}
   .simple-strip{grid-template-columns:1fr 1fr}
   .grid-two{grid-template-columns:1fr}
