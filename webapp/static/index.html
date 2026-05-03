@@ -26,6 +26,13 @@
       </div>
     </nav>
 
+    <section class="ticker card">
+      <div class="ticker-label" id="tickerLabel">Live Heatwave Feed</div>
+      <div class="ticker-window">
+        <div id="tickerTrack" class="ticker-track">Loading heat signal...</div>
+      </div>
+    </section>
+
     <section class="hero">
       <div class="hero-left">
         <p id="heroKicker" class="kicker">Live Heat Intelligence</p>
@@ -62,6 +69,34 @@
       <div class="field">
         <label id="dateLabel" for="dateSelect">Forecast Date</label>
         <select id="dateSelect"></select>
+      </div>
+    </section>
+
+    <section class="compare card">
+      <div class="compare-head">
+        <h3 id="compareTitle">District Compare</h3>
+        <div class="field compare-field">
+          <label id="compareLabel" for="compareDistrictSelect">Compare With</label>
+          <select id="compareDistrictSelect"></select>
+        </div>
+      </div>
+      <div class="compare-grid">
+        <article class="compare-box">
+          <span id="comparePairLabel">Pair</span>
+          <strong id="comparePairValue">--</strong>
+        </article>
+        <article class="compare-box">
+          <span id="compareRiskLabel">Risk Delta</span>
+          <strong id="compareRiskValue">--</strong>
+        </article>
+        <article class="compare-box">
+          <span id="compareTmaxLabel">Tmax Delta</span>
+          <strong id="compareTmaxValue">--</strong>
+        </article>
+        <article class="compare-box">
+          <span id="compareAlertLabel">Alert Pair</span>
+          <strong id="compareAlertValue">--</strong>
+        </article>
       </div>
     </section>
 
