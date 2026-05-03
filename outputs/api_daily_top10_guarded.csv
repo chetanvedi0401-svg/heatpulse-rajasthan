@@ -47,15 +47,15 @@ date,district,rain_mm,tmax_c,tmin_c,tavg_c,heat_stress_score,pred_prob_critical_
 2026-05-03,Jaisalmer,0.0,41.8,27.5,34.65,19.91244388172045,0.9025632799962078,1,44.532803322985565,RED,6,Heat-only,excluded,High,Emergency heat-health action
 2026-05-03,Sikar,0.0,40.3,27.5,33.9,18.85040121505373,0.8651585728631702,1,42.53331083999588,RED,7,Heat-only,excluded,High,Emergency heat-health action
 2026-05-03,Barmer,0.0,41.1,26.3,33.7,16.609575301075285,0.726852138345901,0,36.23604878780547,ORANGE,8,Heat-only,excluded,Medium,Heat-health preparedness activation
-2026-05-03,Nagaur,0.0,40.2,28.4,34.3,17.490672892473107,0.7050089297154424,0,36.044249920148,ORANGE,9,Heat-only,excluded,Medium,Heat-health preparedness activation
+2026-05-03,Nagaur,0.0,40.2,28.4,34.3,17.490672892473107,0.7050089297154428,0,36.04424992014802,ORANGE,9,Heat-only,excluded,Medium,Heat-health preparedness activation
 2026-05-03,Dhaulpur,0.1,39.8,24.6,32.2,9.0,0.7817893977902982,0,33.212628922660436,ORANGE,10,Heat-only,excluded,Medium,Heat-health preparedness activation
-2026-05-04,Pali,0.0,41.0,26.9,33.95,21.595057623655887,0.7397826275349969,0,39.92917941910122,ORANGE,1,Heat-only,excluded,Medium,Heat-health preparedness activation
+2026-05-04,Pali,0.0,41.0,26.9,33.95,21.595057623655887,0.7397826275349972,0,39.92917941910123,ORANGE,1,Heat-only,excluded,Medium,Heat-health preparedness activation
 2026-05-04,Barmer,0.0,41.7,25.8,33.75,19.9286072043011,0.6962672415731899,0,37.32294813785736,ORANGE,2,Heat-only,excluded,Medium,Heat-health preparedness activation
 2026-05-04,Nagaur,0.0,40.5,26.1,33.3,10.590672892473115,0.39215591343303996,0,20.609394350263926,GREEN,3,Heat-only,excluded,Low,Routine monitoring
 2026-05-04,Alwar,12.6,36.7,22.4,29.55,9.0,0.3576422327236837,0,18.367478145328928,GREEN,4,Heat-only,excluded,Low,Routine monitoring
 2026-05-04,Sawai Madhopur,0.9,37.5,24.0,30.75,9.0,0.2895116022931009,0,15.98290608025853,GREEN,5,Heat-only,excluded,Low,Routine monitoring
-2026-05-04,Udaipur,0.0,36.5,22.2,29.35,10.5,0.2592120471095562,0,15.897421648834467,GREEN,6,Heat-only,excluded,Low,Routine monitoring
+2026-05-04,Udaipur,0.0,36.5,22.2,29.35,10.5,0.25921204710955614,0,15.897421648834463,GREEN,6,Heat-only,excluded,Low,Routine monitoring
 2026-05-04,Banswara,0.0,38.7,26.1,32.400000000000006,12.939573935483882,0.1984459523270393,0,15.356331389510899,GREEN,7,Heat-only,excluded,Low,Routine monitoring
-2026-05-04,Churu,0.1,38.7,26.5,32.6,13.132699290322584,0.1861002039654893,0,15.049761677501806,GREEN,8,Heat-only,excluded,Low,Routine monitoring
-2026-05-04,Jaipur,1.9,36.9,24.0,30.45,9.0,0.24415692162638777,0,14.395492256923571,GREEN,9,Heat-only,excluded,Low,Routine monitoring
-2026-05-04,Sirohi,0.0,40.2,25.5,32.85,11.675557591397862,0.1695792012954249,0,13.52438447974848,GREEN,10,Heat-only,excluded,Low,Routine monitoring
+2026-05-04,Churu,0.1,38.7,26.5,32.6,13.132699290322584,0.18610020396548943,0,15.04976167750181,GREEN,8,Heat-only,excluded,Low,Routine monitoring
+2026-05-04,Jaipur,1.9,36.9,24.0,30.45,9.0,0.24415692162638764,0,14.395492256923568,GREEN,9,Heat-only,excluded,Low,Routine monitoring
+2026-05-04,Sirohi,0.0,40.2,25.5,32.85,11.675557591397862,0.16957920129542492,0,13.524384479748484,GREEN,10,Heat-only,excluded,Low,Routine monitoring
