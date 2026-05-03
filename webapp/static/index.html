@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -37,16 +37,30 @@
         <button id="refreshBtn" class="btn-primary">Refresh Data</button>
         <a id="downloadDayBtn" class="btn-ghost" href="#">Download Day CSV</a>
         <a id="downloadTopBtn" class="btn-ghost" href="/download/top10.csv">Download Top10 CSV</a>
+        <div class="status-strip">
+          <div class="status-item">
+            <span id="statusUpdatedLabel" class="status-label">Last Updated</span>
+            <strong id="statusUpdatedValue">-</strong>
+          </div>
+          <div class="status-item">
+            <span id="statusApiLabel" class="status-label">API Status</span>
+            <strong id="statusApiValue">-</strong>
+          </div>
+          <div class="status-item">
+            <span id="statusSourceLabel" class="status-label">Source Date</span>
+            <strong id="statusSourceValue">-</strong>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="controls card">
       <div class="field">
-        <label for="districtSelect">District</label>
+        <label id="districtLabel" for="districtSelect">District</label>
         <select id="districtSelect"></select>
       </div>
       <div class="field">
-        <label for="dateSelect">Forecast Date</label>
+        <label id="dateLabel" for="dateSelect">Forecast Date</label>
         <select id="dateSelect"></select>
       </div>
     </section>
@@ -72,17 +86,17 @@
 
     <section class="simple-strip">
       <article class="simple-card">
-        <p class="simple-kicker">Today's Color Alert</p>
+        <p id="simpleKickerAlert" class="simple-kicker">Today's Color Alert</p>
         <h3 id="simpleAlertTitle">--</h3>
         <p id="simpleAlertText">Local heat advisory will appear here.</p>
       </article>
       <article class="simple-card">
-        <p class="simple-kicker">Safe Outdoor Time</p>
+        <p id="simpleKickerWindow" class="simple-kicker">Safe Outdoor Time</p>
         <h3 id="simpleWindow">--</h3>
-        <p>Use extra caution during peak sun hours (11 AM - 4 PM).</p>
+        <p id="simpleWindowNote">Use extra caution during peak sun hours (11 AM - 4 PM).</p>
       </article>
       <article class="simple-card">
-        <p class="simple-kicker">Water + ORS Plan</p>
+        <p id="simpleKickerWater" class="simple-kicker">Water + ORS Plan</p>
         <h3 id="simpleHydration">--</h3>
         <p id="simpleOrs">--</p>
       </article>
@@ -113,7 +127,7 @@
         <p><b id="labConf">Confidence:</b> <span id="confText">-</span></p>
         <p><b id="labRank">Rank Within Date:</b> <span id="rankText">-</span></p>
         <div id="tipCard" class="tip-card">
-          <span class="tip-label">Health Tip</span>
+          <span id="tipLabel" class="tip-label">Health Tip</span>
           <p id="tipText">Stay hydrated and avoid direct afternoon sun exposure.</p>
         </div>
         <div class="explain-card">
@@ -133,11 +147,11 @@
           <p id="whyLogic" class="why-logic">Alert color is policy-driven using probability, risk score, and guardrail rules.</p>
 
           <div class="formula-card">
-            <h4>How This Risk Score Is Calculated</h4>
+            <h4 id="formulaTitle">How This Risk Score Is Calculated</h4>
             <p id="formulaLine" class="formula-line">Risk Score = 0.65 × Heat Stress Score + 0.35 × (Critical Probability × 100)</p>
             <div class="formula-grid">
-              <div><span>Probability Band</span><strong id="probBandText">-</strong></div>
-              <div><span>Risk Band</span><strong id="riskBandText">-</strong></div>
+              <div><span id="probBandLabel">Probability Band</span><strong id="probBandText">-</strong></div>
+              <div><span id="riskBandLabel">Risk Band</span><strong id="riskBandText">-</strong></div>
             </div>
             <p id="policySummary" class="formula-note">Final color is decided by policy rules using both probability and risk score.</p>
             <p id="tempOnlyNote" class="formula-note dim">Note: Temperature alone does not decide the alert color.</p>
@@ -211,22 +225,22 @@
     </section>
 
     <section class="card faq-card">
-      <h2>Common User Help</h2>
+      <h2 id="faqTitle">Common User Help</h2>
       <details>
-        <summary>What does Green mean?</summary>
-        <p>Routine monitoring. Normal daily activity can continue with regular hydration.</p>
+        <summary id="faqQ1">What does Green mean?</summary>
+        <p id="faqA1">Routine monitoring. Normal daily activity can continue with regular hydration.</p>
       </details>
       <details>
-        <summary>What is the difference between Yellow, Orange, and Red?</summary>
-        <p>Yellow: advisory. Orange: preparedness mode. Red: emergency heat-health action with minimal outdoor exposure.</p>
+        <summary id="faqQ2">What is the difference between Yellow, Orange, and Red?</summary>
+        <p id="faqA2">Yellow: advisory. Orange: preparedness mode. Red: emergency heat-health action with minimal outdoor exposure.</p>
       </details>
       <details>
-        <summary>How is this prediction generated?</summary>
-        <p>Next-day risk is generated from district weather inputs and model probability. Final color comes from policy logic that combines both risk score and critical probability.</p>
+        <summary id="faqQ3">How is this prediction generated?</summary>
+        <p id="faqA3">Next-day risk is generated from district weather inputs and model probability. Final color comes from policy logic that combines both risk score and critical probability.</p>
       </details>
       <details>
-        <summary>Why can two hot days have different colors?</summary>
-        <p>Because alert color is not based only on temperature. The model also uses pattern-based probability, heat stress behavior, and policy guardrails.</p>
+        <summary id="faqQ4">Why can two hot days have different colors?</summary>
+        <p id="faqA4">Because alert color is not based only on temperature. The model also uses pattern-based probability, heat stress behavior, and policy guardrails.</p>
       </details>
     </section>
   </main>
