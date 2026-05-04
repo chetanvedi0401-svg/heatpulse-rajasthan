@@ -88,6 +88,8 @@ def _runtime_status() -> dict[str, str]:
         "api_source_file": "",
         "api_source_date": "",
         "live_file_updated_at_utc": "",
+        "pipeline_model_mode": "",
+        "pipeline_model_name": "",
     }
     if LIVE_FILE.exists():
         out["live_file_updated_at_utc"] = datetime.fromtimestamp(
@@ -107,6 +109,8 @@ def _runtime_status() -> dict[str, str]:
         out["api_status"] = str(row.get("api_status", "") or "")
         out["api_source_file"] = str(row.get("api_input_file", "") or "")
         out["api_source_date"] = _extract_source_date(out["api_source_file"])
+        out["pipeline_model_mode"] = str(row.get("model_mode", "") or "")
+        out["pipeline_model_name"] = str(row.get("model_name", "") or "")
     except Exception:
         return out
 
@@ -155,6 +159,8 @@ def api_meta():
             "live_file_updated_at_utc": runtime["live_file_updated_at_utc"],
             "pipeline_last_run": runtime["pipeline_last_run"],
             "pipeline_status": runtime["pipeline_status"],
+            "pipeline_model_mode": runtime["pipeline_model_mode"],
+            "pipeline_model_name": runtime["pipeline_model_name"],
             "api_status": runtime["api_status"],
             "api_source_file": runtime["api_source_file"],
             "api_source_date": runtime["api_source_date"],
