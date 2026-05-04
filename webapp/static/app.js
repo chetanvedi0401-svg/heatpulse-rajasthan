@@ -17,6 +17,7 @@ const els = {
   topBody: document.querySelector("#topTable tbody"),
   riserBody: document.querySelector("#riserTable tbody"),
   langBtn: document.getElementById("langBtn"),
+  cinematicBtn: document.getElementById("cinematicBtn"),
   fsBtn: document.getElementById("fsBtn"),
   weatherIcon: document.getElementById("weatherIcon"),
   weatherTitle: document.getElementById("weatherTitle"),
@@ -104,6 +105,7 @@ const els = {
   scrollProgress: document.getElementById("scrollProgress"),
   cursorGlow: document.getElementById("cursorGlow"),
   heatField: document.getElementById("heatField"),
+  cinematicLayers: document.getElementById("cinematicLayers"),
 };
 
 const labels = {
@@ -255,6 +257,8 @@ let markerLayer = null;
 let revealObserver = null;
 let lastDayItems = [];
 let lastSelectedDistrict = "";
+let cinematicMode = false;
+let cinematicLayerTimer = null;
 const isHi = () => currentLang === "hi";
 
 function alertClass(level) {
@@ -648,6 +652,58 @@ function setFsButtonText() {
     els.fsBtn.textContent = t.fsOn;
   } else {
     els.fsBtn.textContent = t.fsOff;
+  }
+}
+
+function setCinematicButtonText() {
+  if (!els.cinematicBtn) return;
+  const text = cinematicMode ? "Cinematic: ON" : "Cinematic: OFF";
+  els.cinematicBtn.textContent = text;
+  els.cinematicBtn.classList.toggle("is-active", cinematicMode);
+}
+
+function startCinematicLayerCycle() {
+  if (!els.cinematicLayers) return;
+  const chips = Array.from(els.cinematicLayers.querySelectorAll(".layer-chip"));
+  if (!chips.length) return;
+  let idx = chips.findIndex((c) => c.classList.contains("is-active"));
+  if (idx < 0) idx = 0;
+  clearInterval(cinematicLayerTimer);
+  cinematicLayerTimer = setInterval(() => {
+    chips[idx].classList.remove("is-active");
+    idx = (idx + 1) % chips.length;
+    chips[idx].classList.add("is-active");
+  }, 2200);
+}
+
+function stopCinematicLayerCycle() {
+  if (cinematicLayerTimer) {
+    clearInterval(cinematicLayerTimer);
+    cinematicLayerTimer = null;
+  }
+}
+
+function setCinematicMode(enabled, persist = true) {
+  cinematicMode = Boolean(enabled);
+  document.body.classList.toggle("cinematic-mode", cinematicMode);
+  if (els.cinematicLayers) {
+    els.cinematicLayers.hidden = !cinematicMode;
+  }
+  if (cinematicMode) startCinematicLayerCycle();
+  else stopCinematicLayerCycle();
+  setCinematicButtonText();
+  if (persist) {
+    try {
+      localStorage.setItem("hw_cinematic_mode", cinematicMode ? "1" : "0");
+    } catch (_) {}
+  }
+}
+
+function loadCinematicPreference() {
+  try {
+    return localStorage.getItem("hw_cinematic_mode") === "1";
+  } catch (_) {
+    return false;
   }
 }
 
@@ -1259,6 +1315,7 @@ document.addEventListener("fullscreenchange", setFsButtonText);
 
 setupRevealAnimations();
 setupVisualPolish();
+setCinematicMode(loadCinematicPreference(), false);
 
 init().catch((e) => {
   console.error(e);
@@ -1266,3 +1323,9 @@ init().catch((e) => {
   setSkeletonLoading(false);
   alert("Failed to load dashboard data. Check backend server and data files.");
 });
+
+if (els.cinematicBtn) {
+  els.cinematicBtn.addEventListener("click", () => {
+    setCinematicMode(!cinematicMode, true);
+  });
+}
