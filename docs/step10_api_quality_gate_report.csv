@@ -161,3 +161,35 @@ Traceback (most recent call last):
     )
 FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
 "
+2026-05-04 06:40:09,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
+STDOUT:
+
+STDERR:
+Traceback (most recent call last):
+  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
+    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
+  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
+    self.handles = get_handle(
+                   ~~~~~~~~~~^
+        f,
+        ^^
+    ...<6 lines>...
+        storage_options=self.options.get(""storage_options"", None),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
+    handle = open(
+        handle,
+    ...<3 lines>...
+        newline="""",
+    )
+FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
+"
