@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HeatWatch Mini</title>
+  <link rel="stylesheet" href="/static/mini.css" />
+</head>
+<body>
+  <main class="mini-wrap">
+    <header class="mini-head">
+      <div>
+        <p class="kicker">HeatWatch Rajasthan</p>
+        <h1>Mini Dashboard</h1>
+      </div>
+      <a class="open-full" href="/">Open Full</a>
+    </header>
+
+    <section class="mini-card controls">
+      <div class="field">
+        <label for="miniDistrict">District</label>
+        <select id="miniDistrict"></select>
+      </div>
+      <div class="field">
+        <label for="miniDate">Forecast Date</label>
+        <select id="miniDate"></select>
+      </div>
+      <button id="miniRefresh">Refresh</button>
+    </section>
+
+    <section class="mini-card alert-card">
+      <div class="row">
+        <span>Alert</span>
+        <strong id="miniAlert">-</strong>
+      </div>
+      <div class="row">
+        <span>Risk Score</span>
+        <strong id="miniRisk">-</strong>
+      </div>
+      <div class="row">
+        <span>Probability</span>
+        <strong id="miniProb">-</strong>
+      </div>
+    </section>
+
+    <section class="mini-grid">
+      <article class="mini-card">
+        <p>Max Temp</p>
+        <h3 id="miniTmax">-</h3>
+      </article>
+      <article class="mini-card">
+        <p>Min Temp</p>
+        <h3 id="miniTmin">-</h3>
+      </article>
+      <article class="mini-card">
+        <p>Rain</p>
+        <h3 id="miniRain">-</h3>
+      </article>
+      <article class="mini-card">
+        <p>Mix</p>
+        <h3 id="miniMix">-</h3>
+      </article>
+    </section>
+
+    <section class="mini-card">
+      <h2>Top 3 Districts</h2>
+      <div id="miniTop" class="top-list"></div>
+    </section>
+  </main>
+  <script src="/static/mini.js"></script>
+</body>
+</html>
+
