@@ -3,10 +3,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from functools import lru_cache
 from io import StringIO
+import json
 import os
 from pathlib import Path
 import re
 from typing import Any
+from urllib import request as urlrequest
+from urllib.error import URLError, HTTPError
 
 import pandas as pd
 from flask import Flask, jsonify, render_template, request, Response
@@ -20,6 +23,8 @@ LIVE_FILE = OUTPUTS / "api_forecast_alerts_step9_guarded.csv"
 TOP10_FILE = OUTPUTS / "api_latest_top10_guarded.csv"
 COORD_FILE = DOCS / "step9_district_coordinates.csv"
 LOG_FILE = ROOT / "logs" / "daily_run_log.csv"
+CONTACTS_FILE = DOCS / "alert_contacts.csv"
+ADVISORY_FILE = DOCS / "official_advisories.csv"
 
 ALERT_ORDER = ["RED", "ORANGE", "YELLOW", "GREEN"]
 
@@ -122,9 +127,173 @@ def alert_mix(df: pd.DataFrame) -> dict[str, int]:
     return {k: int(vc.get(k, 0)) for k in ALERT_ORDER}
 
 
+def _default_advisories() -> list[dict[str, str]]:
+    return [
+        {
+            "title": "Heatwave Guidance and Warnings",
+            "source": "India Meteorological Department (IMD)",
+            "url": "https://mausam.imd.gov.in/",
+            "category": "weather",
+        },
+        {
+            "title": "Heat Wave Advisory for Public",
+            "source": "National Disaster Management Authority (NDMA)",
+            "url": "https://ndma.gov.in/",
+            "category": "disaster-preparedness",
+        },
+        {
+            "title": "Heat-related Illness Prevention",
+            "source": "Ministry of Health & Family Welfare",
+            "url": "https://www.mohfw.gov.in/",
+            "category": "public-health",
+        },
+        {
+            "title": "State Disaster Management Updates",
+            "source": "Rajasthan SDMA",
+            "url": "https://rajsdma.rajasthan.gov.in/",
+            "category": "state-response",
+        },
+    ]
+
+
+def load_official_advisories() -> list[dict[str, str]]:
+    if ADVISORY_FILE.exists():
+        try:
+            df = pd.read_csv(ADVISORY_FILE)
+            needed = {"title", "source", "url"}
+            if needed.issubset(set(df.columns)):
+                out = []
+                for _, r in df.iterrows():
+                    out.append(
+                        {
+                            "title": str(r.get("title", "")).strip(),
+                            "source": str(r.get("source", "")).strip(),
+                            "url": str(r.get("url", "")).strip(),
+                            "category": str(r.get("category", "official")).strip() or "official",
+                        }
+                    )
+                out = [x for x in out if x["title"] and x["url"]]
+                if out:
+                    return out
+        except Exception:
+            pass
+    return _default_advisories()
+
+
+def build_context_notes(live: pd.DataFrame, date_s: str, district: str = "") -> list[str]:
+    notes: list[str] = []
+    day = live[live["date"].dt.date.astype(str) == date_s].copy()
+    if day.empty:
+        return notes
+
+    mix = alert_mix(day)
+    top = day.sort_values("risk_score_next_day", ascending=False).head(1)
+    if not top.empty:
+        row = top.iloc[0]
+        notes.append(
+            f"Highest district risk on {date_s}: {row['district']} ({row['alert_level_next_day']}, risk {float(row['risk_score_next_day']):.2f})."
+        )
+
+    notes.append(
+        f"State mix: RED {mix.get('RED',0)} | ORANGE {mix.get('ORANGE',0)} | YELLOW {mix.get('YELLOW',0)} | GREEN {mix.get('GREEN',0)}."
+    )
+
+    if district:
+        d = day[day["district"] == district]
+        if not d.empty:
+            dr = d.iloc[0]
+            notes.append(
+                f"Selected district {district}: {dr['alert_level_next_day']} with model probability {float(dr.get('pred_prob_critical_t1', 0)):.2f}."
+            )
+
+    runtime = _runtime_status()
+    api_status = str(runtime.get("api_status", "")).lower()
+    if api_status == "stale_fallback":
+        notes.append("Live API was unavailable in latest run; validated fallback data was used.")
+    elif api_status == "success":
+        notes.append("Live weather API successfully updated in latest run.")
+    return notes
+
+
+def load_contacts() -> list[dict[str, str]]:
+    if not CONTACTS_FILE.exists():
+        return []
+    try:
+        df = pd.read_csv(CONTACTS_FILE)
+    except Exception:
+        return []
+
+    cols = {c.lower(): c for c in df.columns}
+    name_col = cols.get("name")
+    phone_col = cols.get("phone")
+    channel_col = cols.get("channel")
+    district_col = cols.get("district")
+    if not phone_col:
+        return []
+
+    out = []
+    for _, r in df.iterrows():
+        phone = str(r.get(phone_col, "")).strip()
+        if not phone:
+            continue
+        out.append(
+            {
+                "name": str(r.get(name_col, "Receiver")).strip() if name_col else "Receiver",
+                "phone": phone,
+                "channel": str(r.get(channel_col, "sms")).strip().lower() if channel_col else "sms",
+                "district": str(r.get(district_col, "")).strip().title() if district_col else "",
+            }
+        )
+    return out
+
+
+def compose_alert_message(day: pd.DataFrame, date_s: str, district: str = "") -> str:
+    if district:
+        day = day[day["district"] == district].copy()
+    if day.empty:
+        return f"HeatWatch Rajasthan ({date_s}): no alert rows available."
+
+    top = day.sort_values("risk_score_next_day", ascending=False).head(5)
+    lines = []
+    for _, r in top.iterrows():
+        lines.append(f"{r['district']} {r['alert_level_next_day']} ({float(r['risk_score_next_day']):.1f})")
+    return (
+        f"HeatWatch Rajasthan Alert ({date_s})\n"
+        f"Top risk districts: {' | '.join(lines)}\n"
+        "Action: Follow district heat-health advisory and avoid peak afternoon exposure."
+    )
+
+
+def try_send_via_webhook(payload: dict[str, Any]) -> tuple[bool, str]:
+    url = os.getenv("ALERT_WEBHOOK_URL", "").strip()
+    if not url:
+        return False, "ALERT_WEBHOOK_URL not configured"
+    try:
+        req = urlrequest.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urlrequest.urlopen(req, timeout=12) as resp:
+            code = int(getattr(resp, "status", 200))
+            if 200 <= code < 300:
+                return True, f"webhook_ok_{code}"
+            return False, f"webhook_http_{code}"
+    except (HTTPError, URLError, TimeoutError) as e:
+        return False, f"webhook_error: {e}"
+    except Exception as e:
+        return False, f"webhook_unexpected: {e}"
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/mini")
+def mini_home():
+    return render_template("mini.html")
 
 
 @app.after_request
@@ -168,6 +337,30 @@ def api_meta():
     )
 
 
+@app.route("/api/advisories")
+def api_advisories():
+    live, _, _ = get_frames()
+    dates = sorted(live["date"].dt.date.unique().tolist())
+    latest_date = str(dates[-1]) if dates else ""
+    date_s = request.args.get("date", latest_date)
+    district = request.args.get("district", "").strip().title()
+
+    context = build_context_notes(live, date_s, district=district)
+    official = load_official_advisories()
+    runtime = _runtime_status()
+
+    return jsonify(
+        {
+            "date": date_s,
+            "district": district,
+            "context": context,
+            "official": official,
+            "api_status": runtime.get("api_status", ""),
+            "updated_utc": runtime.get("live_file_updated_at_utc", ""),
+        }
+    )
+
+
 @app.route("/api/day")
 def api_day():
     live, _, coords = get_frames()
@@ -202,6 +395,51 @@ def api_day():
         )
 
     return jsonify({"date": date_s, "count": len(items), "alert_mix": alert_mix(day), "items": items})
+
+
+@app.route("/api/mini")
+def api_mini():
+    live, _, _ = get_frames()
+    dates = sorted(live["date"].dt.date.unique().tolist())
+    latest_date = str(dates[-1]) if dates else ""
+    date_s = request.args.get("date", latest_date)
+    district = request.args.get("district", "").strip().title()
+    day = live[live["date"].dt.date.astype(str) == date_s].copy()
+    if day.empty:
+        return jsonify({"error": "no day data"}), 404
+
+    if not district:
+        district = str(day.sort_values("risk_score_next_day", ascending=False).iloc[0]["district"])
+    row_df = day[day["district"] == district]
+    if row_df.empty:
+        row_df = day.head(1)
+    row = row_df.iloc[0]
+    mix = alert_mix(day)
+    top3 = day.sort_values("risk_score_next_day", ascending=False).head(3)
+    top_rows = [
+        {
+            "district": str(r["district"]),
+            "alert": str(r["alert_level_next_day"]),
+            "risk": float(r["risk_score_next_day"]),
+        }
+        for _, r in top3.iterrows()
+    ]
+    return jsonify(
+        {
+            "date": date_s,
+            "district": district,
+            "current": {
+                "tmax_c": float(row.get("tmax_c", 0)),
+                "tmin_c": float(row.get("tmin_c", 0)),
+                "rain_mm": float(row.get("rain_mm", 0)),
+                "risk_score_next_day": float(row.get("risk_score_next_day", 0)),
+                "alert_level_next_day": str(row.get("alert_level_next_day", "GREEN")),
+                "pred_prob_critical_t1": float(row.get("pred_prob_critical_t1", 0)),
+            },
+            "mix": mix,
+            "top3": top_rows,
+        }
+    )
 
 
 @app.route("/api/district")
@@ -372,6 +610,77 @@ def download_top10_csv():
         csv_text,
         mimetype="text/csv",
         headers={"Content-Disposition": 'attachment; filename="heat_top10_latest.csv"'},
+    )
+
+
+@app.route("/api/notify/send", methods=["POST"])
+def api_notify_send():
+    live, _, _ = get_frames()
+    body = request.get_json(silent=True) or {}
+    date_s = str(body.get("date", "")).strip()
+    district = str(body.get("district", "")).strip().title()
+    channel = str(body.get("channel", "sms")).strip().lower()
+    dry_run = bool(body.get("dry_run", False))
+
+    dates = sorted(live["date"].dt.date.unique().tolist())
+    if not date_s:
+        date_s = str(dates[-1]) if dates else ""
+    day = live[live["date"].dt.date.astype(str) == date_s].copy()
+    if day.empty:
+        return jsonify({"ok": False, "error": "No day data available"}), 400
+
+    msg = compose_alert_message(day, date_s, district=district)
+    contacts = load_contacts()
+    if district:
+        contacts = [c for c in contacts if (not c["district"]) or c["district"] == district]
+    if channel in {"sms", "whatsapp"}:
+        contacts = [c for c in contacts if c["channel"] == channel]
+    elif channel == "all":
+        pass
+    else:
+        contacts = [c for c in contacts if c["channel"] == "sms"]
+
+    payload = {
+        "source": "heatwatch-rajasthan",
+        "date": date_s,
+        "district": district,
+        "channel": channel,
+        "message": msg,
+        "contacts": contacts,
+    }
+
+    if dry_run:
+        return jsonify(
+            {
+                "ok": True,
+                "mode": "dry_run",
+                "contacts_count": len(contacts),
+                "message_preview": msg,
+            }
+        )
+
+    sent, detail = try_send_via_webhook(payload)
+    if sent:
+        return jsonify(
+            {
+                "ok": True,
+                "mode": "live",
+                "provider": "webhook",
+                "contacts_count": len(contacts),
+                "detail": detail,
+            }
+        )
+
+    # Graceful fallback so UI stays usable even without provider credentials.
+    return jsonify(
+        {
+            "ok": True,
+            "mode": "simulated",
+            "provider": "none",
+            "contacts_count": len(contacts),
+            "detail": detail,
+            "message_preview": msg,
+        }
     )
 
 
