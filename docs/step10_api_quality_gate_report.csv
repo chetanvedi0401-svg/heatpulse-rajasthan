@@ -1,460 +1,131 @@
 run_time,fetched_file,fetched_valid,selected_mode,selected_file,valid_archive_files,invalid_archive_files,fetched_reason
-2026-05-02 19:02:22,,False,failed_no_valid_archive,,0,0,"API fetch failed.
+2026-05-02 00:00:11,,False,fallback_after_fetch_error,d:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260501.csv,3,0,"API fetch failed.
 STDOUT:
+Failed district: Ajmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.45&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Alwar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.56&longitude=76.61&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Banswara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=23.55&longitude=74.44&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Barmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.75&longitude=71.38&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bhilwara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.35&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bikaner | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.02&longitude=73.31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bundi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.44&longitude=75.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Chittaurgarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=74.63&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Churu | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.3&longitude=74.96&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Dhaulpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.7&longitude=77.89&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Ganganagar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.91&longitude=73.88&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Hanumangarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.58&longitude=74.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=75.79&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaisalmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=70.91&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jhalawar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.59&longitude=76.16&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jodhpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.24&longitude=73.02&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Kota | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.21&longitude=75.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Nagaur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.2&longitude=73.74&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Pali | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.77&longitude=73.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sawai Madhopur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.02&longitude=76.35&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sikar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.61&longitude=75.14&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sirohi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=72.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Udaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.58&longitude=73.68&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
 
 STDERR:
 Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-             ^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
+  File ""d:\Rajasthan Climate Risk Command System\scripts\fetch_daily_weather_api.py"", line 69, in <module>
+    raise RuntimeError(""No API rows fetched. Check connectivity or config."")
+RuntimeError: No API rows fetched. Check connectivity or config.
 "
-2026-05-02 19:23:44,,False,failed_no_valid_archive,,0,0,"API fetch failed.
+2026-05-02 00:50:52,,False,fallback_after_fetch_error,d:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260501.csv,3,0,"API fetch failed.
 STDOUT:
+Failed district: Ajmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.45&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Alwar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.56&longitude=76.61&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Banswara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=23.55&longitude=74.44&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Barmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.75&longitude=71.38&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bhilwara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.35&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bikaner | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.02&longitude=73.31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bundi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.44&longitude=75.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Chittaurgarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=74.63&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Churu | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.3&longitude=74.96&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Dhaulpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.7&longitude=77.89&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Ganganagar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.91&longitude=73.88&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Hanumangarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.58&longitude=74.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=75.79&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaisalmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=70.91&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jhalawar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.59&longitude=76.16&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jodhpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.24&longitude=73.02&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Kota | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.21&longitude=75.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Nagaur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.2&longitude=73.74&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Pali | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.77&longitude=73.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sawai Madhopur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.02&longitude=76.35&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sikar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.61&longitude=75.14&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sirohi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=72.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Udaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.58&longitude=73.68&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
 
 STDERR:
 Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-             ^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
+  File ""d:\Rajasthan Climate Risk Command System\scripts\fetch_daily_weather_api.py"", line 69, in <module>
+    raise RuntimeError(""No API rows fetched. Check connectivity or config."")
+RuntimeError: No API rows fetched. Check connectivity or config.
 "
-2026-05-03 04:44:20,,False,failed_no_valid_archive,,0,0,"API fetch failed.
+2026-05-03 09:21:37,D:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260503.csv,True,live_valid,D:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260503.csv,4,0,ok
+2026-05-03 22:40:53,,False,fallback_after_fetch_error,D:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260503.csv,4,0,"API fetch failed.
 STDOUT:
+Failed district: Ajmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.45&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Alwar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.56&longitude=76.61&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Banswara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=23.55&longitude=74.44&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Barmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.75&longitude=71.38&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bhilwara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.35&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bikaner | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.02&longitude=73.31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bundi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.44&longitude=75.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Chittaurgarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=74.63&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Churu | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.3&longitude=74.96&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Dhaulpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.7&longitude=77.89&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Ganganagar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.91&longitude=73.88&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Hanumangarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.58&longitude=74.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=75.79&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaisalmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=70.91&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jhalawar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.59&longitude=76.16&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jodhpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.24&longitude=73.02&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Kota | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.21&longitude=75.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Nagaur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.2&longitude=73.74&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Pali | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.77&longitude=73.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sawai Madhopur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.02&longitude=76.35&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sikar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.61&longitude=75.14&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sirohi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=72.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Udaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.58&longitude=73.68&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
 
 STDERR:
 Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-             ^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
+  File ""D:\Rajasthan Climate Risk Command System\scripts\fetch_daily_weather_api.py"", line 74, in <module>
+    raise RuntimeError(""No API rows fetched. Check connectivity or config."")
+RuntimeError: No API rows fetched. Check connectivity or config.
 "
-2026-05-03 07:04:44,,False,failed_no_valid_archive,,0,0,"API fetch failed.
+2026-05-04 08:58:23,D:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260504.csv,True,live_valid,D:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260504.csv,5,0,ok
+2026-05-04 10:20:51,,False,fallback_after_fetch_error,D:\Rajasthan Climate Risk Command System\data\raw\api_daily_weather_20260504.csv,5,0,"API fetch failed.
 STDOUT:
+Failed district: Ajmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.45&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Alwar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.56&longitude=76.61&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Banswara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=23.55&longitude=74.44&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Barmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.75&longitude=71.38&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bhilwara | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.35&longitude=74.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bikaner | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.02&longitude=73.31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Bundi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.44&longitude=75.64&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Chittaurgarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=74.63&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Churu | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=28.3&longitude=74.96&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Dhaulpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.7&longitude=77.89&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Ganganagar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.91&longitude=73.88&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Hanumangarh | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=29.58&longitude=74.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=75.79&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jaisalmer | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.91&longitude=70.91&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jhalawar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.59&longitude=76.16&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Jodhpur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.24&longitude=73.02&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Kota | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.21&longitude=75.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Nagaur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.2&longitude=73.74&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Pali | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=25.77&longitude=73.33&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sawai Madhopur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=26.02&longitude=76.35&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sikar | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=27.61&longitude=75.14&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Sirohi | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.89&longitude=72.86&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
+Failed district: Udaipur | error: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=24.58&longitude=73.68&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&timezone=Asia%2FKolkata&forecast_days=2 (Caused by NewConnectionError(""HTTPSConnection(host='api.open-meteo.com', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions""))
 
 STDERR:
 Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 10:06:09,,False,failed_no_valid_archive,,0,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 10:35:48,,False,failed_no_valid_archive,,0,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 14:11:54,,False,failed_no_valid_archive,,0,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 16:50:51,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 17:23:43,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 17:40:21,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 17:49:14,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 17:57:56,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 18:20:01,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-03 18:42:55,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
-"
-2026-05-04 04:40:52,,False,fallback_after_fetch_error,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260503.csv,1,0,"API fetch failed.
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File ""/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/scripts/fetch_daily_weather_api.py"", line 15, in <module>
-    cfg = pd.read_csv(DOCS / ""step9_api_config_template.csv"")
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/parsers/readers.py"", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ~~~~~~~~~~^
-        f,
-        ^^
-    ...<6 lines>...
-        storage_options=self.options.get(""storage_options"", None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File ""/opt/hostedtoolcache/Python/3.13.13/x64/lib/python3.13/site-packages/pandas/io/common.py"", line 926, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="""",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step9_api_config_template.csv'
+  File ""D:\Rajasthan Climate Risk Command System\scripts\fetch_daily_weather_api.py"", line 74, in <module>
+    raise RuntimeError(""No API rows fetched. Check connectivity or config."")
+RuntimeError: No API rows fetched. Check connectivity or config.
 "
