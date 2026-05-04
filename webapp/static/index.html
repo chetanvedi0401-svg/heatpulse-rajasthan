@@ -24,6 +24,7 @@
         <span id="pill1" class="pill">Public Dashboard</span>
         <span id="pill2" class="pill">Next-Day Risk</span>
         <span id="pill3" class="pill">Decision Support</span>
+        <a id="miniLink" class="pill-link" href="/mini">Mini Dashboard</a>
         <button id="langBtn" class="pill-btn">EN / HI</button>
         <button id="fsBtn" class="pill-btn">Fullscreen</button>
       </div>
@@ -288,6 +289,38 @@
           </div>
         </div>
         <p id="planSummary" class="plan-summary">-</p>
+      </article>
+    </section>
+
+    <section class="grid-two">
+      <article class="card">
+        <h2 id="advisoryTitle">Official Advisories & Context</h2>
+        <p id="advisorySubtext" class="advisory-subtext">Live context + official guidance links for heat action planning.</p>
+        <div id="contextNotes" class="context-list"></div>
+        <div id="officialAdvisories" class="advisory-list"></div>
+      </article>
+      <article class="card">
+        <h2 id="notifyTitle">SMS / WhatsApp Alert Dispatch</h2>
+        <p class="advisory-subtext">Use this to trigger district alert digest to configured recipients.</p>
+        <div class="notify-grid">
+          <div class="field">
+            <label for="notifyChannel">Channel</label>
+            <select id="notifyChannel">
+              <option value="sms">SMS</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="notifyDryRun">Mode</label>
+            <select id="notifyDryRun">
+              <option value="true">Dry Run (Preview)</option>
+              <option value="false">Live / Webhook</option>
+            </select>
+          </div>
+        </div>
+        <button id="notifySendBtn" class="btn-primary notify-btn">Send Alert Digest</button>
+        <pre id="notifyResult" class="notify-result">Dispatch log will appear here.</pre>
       </article>
     </section>
 
