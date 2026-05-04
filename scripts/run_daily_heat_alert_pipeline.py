@@ -3,6 +3,7 @@ import glob
 import os
 import subprocess
 import sys
+import time
 import traceback
 from datetime import datetime
 from pathlib import Path
@@ -32,6 +33,40 @@ ACTION_MAP = {
 }
 
 API_REQUIRED_COLS = ["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]
+
+
+def write_csv_resilient(df, target_file, index=False, retries=5, base_wait_sec=1.0):
+    """
+    Try writing to target CSV with retries.
+    If target stays locked, write a timestamped fallback copy so pipeline does not fail.
+    Returns: (written_path, used_fallback, warning_message)
+    """
+    target = Path(target_file)
+    target.parent.mkdir(parents=True, exist_ok=True)
+
+    for attempt in range(1, retries + 1):
+        try:
+            df.to_csv(target, index=index)
+            return str(target), False, ""
+        except PermissionError as err:
+            if attempt < retries:
+                time.sleep(base_wait_sec * attempt)
+                continue
+
+            fallback_dir = target.parent / "_write_fallback"
+            fallback_dir.mkdir(parents=True, exist_ok=True)
+            stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            fallback_file = fallback_dir / f"{target.stem}_{stamp}{target.suffix}"
+            try:
+                df.to_csv(fallback_file, index=index)
+            except Exception:
+                raise err
+
+            warning = (
+                f"locked_target={target}; wrote_fallback={fallback_file}; "
+                "close any open CSV/Excel handle to resume normal writes"
+            )
+            return str(fallback_file), True, warning
 
 
 def normalize_district(s):
@@ -139,7 +174,7 @@ def append_api_quality_gate_log(row):
     if qfile.exists():
         old = pd.read_csv(qfile)
         frame = pd.concat([old, frame], ignore_index=True)
-    frame.to_csv(qfile, index=False)
+    write_csv_resilient(frame, qfile, index=False)
     return qfile
 
 
@@ -166,9 +201,20 @@ def patch_sklearn_model_compat(clf):
 
 
 def load_model_artifacts():
+    strong_model_file = MODELS / "heatwave_model_step13_strong.joblib"
+    strong_table_file = PROCESSED / "model_table_step12_heatwave_v2.csv"
+
+    if strong_model_file.exists() and strong_table_file.exists():
+        bundle = joblib.load(strong_model_file)
+        model_table = pd.read_csv(strong_table_file, parse_dates=["date"])
+        model_features = [str(x).strip() for x in bundle.get("features", []) if str(x).strip()]
+        best_thr = float(bundle.get("median_threshold", 0.5))
+        model_obj = bundle.get("artifact", bundle)
+        model_name = str(bundle.get("model_name", "strong_model"))
+        return model_table, model_obj, model_features, best_thr, "strong_v3", model_name
+
     model_table_file = PROCESSED / "model_table_step3.csv"
     model_file = MODELS / "baseline_logistic_step4.joblib"
-
     model_table = pd.read_csv(model_table_file, parse_dates=["date"])
     clf = joblib.load(model_file)
     clf = patch_sklearn_model_compat(clf)
@@ -179,10 +225,112 @@ def load_model_artifacts():
 
     thr_df = pd.read_csv(DOCS / "step4_threshold_tuning.csv")
     best_thr = float(thr_df.sort_values("val_f1", ascending=False).iloc[0]["threshold"])
-    return model_table, clf, model_features, best_thr
+    return model_table, clf, model_features, best_thr, "legacy_v1", "baseline_logistic_step4"
 
 
-def map_alert(prob, score, thr):
+def predict_prob(model_obj, x_df):
+    if isinstance(model_obj, dict) and model_obj.get("type") == "ensemble":
+        weights = model_obj.get("weights", [0.25, 0.35, 0.40])
+        models = model_obj.get("models", {})
+        lg = models.get("lg")
+        rf = models.get("rf")
+        gb = models.get("hgb")
+        probs = []
+        if lg is not None:
+            probs.append(float(weights[0]) * lg.predict_proba(x_df)[:, 1])
+        if rf is not None:
+            probs.append(float(weights[1]) * rf.predict_proba(x_df)[:, 1])
+        if gb is not None:
+            probs.append(float(weights[2]) * gb.predict_proba(x_df)[:, 1])
+        if not probs:
+            raise RuntimeError("Ensemble model has no usable sub-models.")
+        return np.sum(probs, axis=0)
+    if isinstance(model_obj, dict) and model_obj.get("type") == "single":
+        inner = model_obj.get("model")
+        if inner is None:
+            raise RuntimeError("Single-model bundle missing model object.")
+        return inner.predict_proba(x_df)[:, 1]
+    return model_obj.predict_proba(x_df)[:, 1]
+
+
+def wet_bulb_stull_c(t_c, rh_pct):
+    rh = rh_pct.clip(lower=5.0, upper=99.0)
+    return (
+        t_c * np.arctan(0.151977 * np.sqrt(rh + 8.313659))
+        + np.arctan(t_c + rh)
+        - np.arctan(rh - 1.676331)
+        + 0.00391838 * np.power(rh, 1.5) * np.arctan(0.023101 * rh)
+        - 4.686035
+    )
+
+
+def heat_index_noaa_c(t_c, rh_pct):
+    t_f = (t_c * 9.0 / 5.0) + 32.0
+    rh = rh_pct.clip(lower=1.0, upper=100.0)
+    hi_simple = 0.5 * (t_f + 61.0 + ((t_f - 68.0) * 1.2) + (rh * 0.094))
+    hi_simple = (hi_simple + t_f) / 2.0
+    hi_reg = (
+        -42.379
+        + 2.04901523 * t_f
+        + 10.14333127 * rh
+        - 0.22475541 * t_f * rh
+        - 0.00683783 * (t_f ** 2)
+        - 0.05481717 * (rh ** 2)
+        + 0.00122874 * (t_f ** 2) * rh
+        + 0.00085282 * t_f * (rh ** 2)
+        - 0.00000199 * (t_f ** 2) * (rh ** 2)
+    )
+    use_reg = hi_simple >= 80.0
+    hi_f = np.where(use_reg, hi_reg, hi_simple)
+    low_sqrt_term = ((17.0 - np.abs(t_f - 95.0)) / 17.0).clip(lower=0)
+    adj_low = ((13.0 - rh) / 4.0) * np.sqrt(low_sqrt_term)
+    low_mask = (rh < 13.0) & (t_f >= 80.0) & (t_f <= 112.0)
+    hi_f = np.where(low_mask, hi_f - adj_low, hi_f)
+    adj_high = ((rh - 85.0) / 10.0) * ((87.0 - t_f) / 5.0)
+    high_mask = (rh > 85.0) & (t_f >= 80.0) & (t_f <= 87.0)
+    hi_f = np.where(high_mask, hi_f + adj_high, hi_f)
+    return (hi_f - 32.0) * 5.0 / 9.0
+
+
+def add_v3_features(df):
+    out = df.copy()
+    out["diurnal_range_c"] = (out["tmax_c"] - out["tmin_c"]).clip(lower=0.1)
+    out["humidity_proxy_pct"] = (
+        76.0
+        - 2.4 * (out["diurnal_range_c"] - 10.0)
+        + 1.1 * out["rain_roll7"].clip(lower=0, upper=25)
+        + 0.9 * out["tmin_anom"].clip(lower=-3, upper=8)
+    ).clip(lower=12, upper=98)
+    out["dewpoint_proxy_c"] = out["tmin_c"] - ((100.0 - out["humidity_proxy_pct"]) / 5.0)
+    out["wetbulb_proxy_c"] = wet_bulb_stull_c(out["tavg_c"], out["humidity_proxy_pct"])
+    out["heat_index_proxy_c"] = heat_index_noaa_c(out["tmax_c"], out["humidity_proxy_pct"])
+    out["night_heat_index"] = (
+        0.6 * out["tmin_anom"].clip(lower=0) * 8.0
+        + 0.4 * (out["humidity_proxy_pct"] - 40.0).clip(lower=0)
+    ).clip(lower=0, upper=100)
+    out["moisture_stress_index"] = (
+        0.45 * (out["humidity_proxy_pct"] - 30.0).clip(lower=0)
+        + 0.35 * out["wetbulb_proxy_c"].clip(lower=18, upper=35)
+        + 0.20 * out["heat_index_proxy_c"].clip(lower=25, upper=55)
+    ).clip(lower=0, upper=100)
+    out["wetbulb_roll3"] = out.groupby("district")["wetbulb_proxy_c"].transform(lambda s: s.rolling(3, min_periods=1).mean())
+    out["humidity_roll3"] = out.groupby("district")["humidity_proxy_pct"].transform(lambda s: s.rolling(3, min_periods=1).mean())
+    return out
+
+
+def map_alert(prob, score, thr, model_mode="legacy_v1"):
+    if model_mode == "strong_v3":
+        red_cut = max(min(thr + 0.55, 0.90), 0.75)
+        orange_cut = max(min(thr + 0.35, 0.80), 0.55)
+        yellow_cut = max(min(thr + 0.20, 0.65), 0.40)
+        if (prob >= red_cut) or (score >= 80):
+            return "RED"
+        if (prob >= orange_cut) or (score >= 60):
+            return "ORANGE"
+        if (prob >= yellow_cut) or (score >= 40):
+            return "YELLOW"
+        return "GREEN"
+
     if (prob >= thr) or (score >= 80):
         return "RED"
     if (prob >= 0.65) or (score >= 60):
@@ -218,28 +366,32 @@ def upsert_history_by_date_district(existing_file, incoming_df):
     return combined
 
 
-def build_historical_auto_alerts(model_table, clf, model_features, best_thr):
+def build_historical_auto_alerts(model_table, model_obj, model_features, best_thr, model_mode):
     x_all = model_table[model_features].copy()
-    all_prob = clf.predict_proba(x_all)[:, 1]
+    all_prob = predict_prob(model_obj, x_all)
     all_pred = (all_prob >= best_thr).astype(int)
 
-    alerts_df = model_table[["date", "district", "target_heat_score_t1"]].copy()
+    score_col = "target_heatwave_score_t1" if "target_heatwave_score_t1" in model_table.columns else "target_heat_score_t1"
+    alerts_df = model_table[["date", "district", score_col]].copy()
+    alerts_df = alerts_df.rename(columns={score_col: "target_score_t1"})
     alerts_df["pred_prob_critical_t1"] = all_prob
+    alerts_df["pred_prob_heatwave_t1"] = all_prob
     alerts_df["pred_critical_t1"] = all_pred
+    alerts_df["pred_heatwave_t1"] = all_pred
     alerts_df["risk_score_next_day"] = (
-        0.65 * alerts_df["target_heat_score_t1"].clip(0, 100)
+        0.65 * alerts_df["target_score_t1"].clip(0, 100)
         + 0.35 * (alerts_df["pred_prob_critical_t1"] * 100)
     ).clip(0, 100)
 
     alerts_df["alert_level_next_day"] = [
-        map_alert(p, s, best_thr)
+        map_alert(p, s, best_thr, model_mode=model_mode)
         for p, s in zip(alerts_df["pred_prob_critical_t1"], alerts_df["risk_score_next_day"])
     ]
 
     alerts_df["rank_within_date"] = (
         alerts_df.groupby("date")["risk_score_next_day"].rank(method="first", ascending=False).astype(int)
     )
-    alerts_df["pipeline_mode"] = "Heat-only"
+    alerts_df["pipeline_mode"] = "Heatwave-v3" if model_mode == "strong_v3" else "Heat-only"
     alerts_df["aqi_status"] = "excluded"
     alerts_df["confidence_tag"] = np.select(
         [alerts_df["pred_prob_critical_t1"] >= 0.85, alerts_df["pred_prob_critical_t1"] >= 0.65],
@@ -252,13 +404,24 @@ def build_historical_auto_alerts(model_table, clf, model_features, best_thr):
     full_file = OUTPUTS / "daily_alerts_auto.csv"
     top10_file = OUTPUTS / "daily_top10_auto.csv"
     latest_top10_file = OUTPUTS / "latest_day_top10_auto.csv"
+    write_warnings = []
 
-    alerts_df.to_csv(full_file, index=False)
-    alerts_df[alerts_df["rank_within_date"] <= 10].to_csv(top10_file, index=False)
+    _, fb1, w1 = write_csv_resilient(alerts_df, full_file, index=False)
+    if fb1 and w1:
+        write_warnings.append(w1)
+
+    top10_df = alerts_df[alerts_df["rank_within_date"] <= 10].copy()
+    _, fb2, w2 = write_csv_resilient(top10_df, top10_file, index=False)
+    if fb2 and w2:
+        write_warnings.append(w2)
+
     latest_date = alerts_df["date"].max()
-    alerts_df[(alerts_df["date"] == latest_date) & (alerts_df["rank_within_date"] <= 10)].to_csv(
-        latest_top10_file, index=False
-    )
+    latest_top10_df = alerts_df[
+        (alerts_df["date"] == latest_date) & (alerts_df["rank_within_date"] <= 10)
+    ].copy()
+    _, fb3, w3 = write_csv_resilient(latest_top10_df, latest_top10_file, index=False)
+    if fb3 and w3:
+        write_warnings.append(w3)
 
     return {
         "rows": int(len(alerts_df)),
@@ -266,6 +429,7 @@ def build_historical_auto_alerts(model_table, clf, model_features, best_thr):
         "full_file": str(full_file),
         "top10_file": str(top10_file),
         "latest_top10_file": str(latest_top10_file),
+        "write_warnings": " | ".join(write_warnings),
     }
 
 
@@ -288,7 +452,7 @@ def latest_existing_api_file():
     return Path(files[-1])
 
 
-def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_files_for_archive=None):
+def build_api_live_guarded_alerts(api_file, model_obj, model_features, best_thr, model_mode, api_files_for_archive=None):
     # Load full raw API archive so historical forecast dates are always retained.
     if api_files_for_archive is None:
         api_files = sorted(glob.glob(str(RAW / "api_daily_weather_*.csv")))
@@ -349,30 +513,34 @@ def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_f
         + combo["tmin_anom"].clip(lower=0) * 3.0
         + combo["dry_spell_7d"] * 1.5
     ).clip(lower=0, upper=100)
+    combo = add_v3_features(combo)
 
     api_dates = set(api_df["date"].dt.normalize())
     live_df = combo[combo["date"].dt.normalize().isin(api_dates)].copy()
 
     x_live = live_df[model_features].copy()
-    live_prob = clf.predict_proba(x_live)[:, 1]
+    live_prob = predict_prob(model_obj, x_live)
     live_pred = (live_prob >= best_thr).astype(int)
 
     live_out = live_df[
         ["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c", "heat_stress_score"]
     ].copy()
     live_out["pred_prob_critical_t1"] = live_prob
+    live_out["pred_prob_heatwave_t1"] = live_prob
     live_out["pred_critical_t1"] = live_pred
+    live_out["pred_heatwave_t1"] = live_pred
     live_out["risk_score_next_day"] = (
         0.65 * live_out["heat_stress_score"] + 0.35 * (live_out["pred_prob_critical_t1"] * 100)
     ).clip(0, 100)
 
     live_out["alert_level_next_day"] = [
-        map_alert(p, s, best_thr) for p, s in zip(live_out["pred_prob_critical_t1"], live_out["risk_score_next_day"])
+        map_alert(p, s, best_thr, model_mode=model_mode)
+        for p, s in zip(live_out["pred_prob_critical_t1"], live_out["risk_score_next_day"])
     ]
     live_out["rank_within_date"] = (
         live_out.groupby("date")["risk_score_next_day"].rank(method="first", ascending=False).astype(int)
     )
-    live_out["pipeline_mode"] = "Heat-only"
+    live_out["pipeline_mode"] = "Heatwave-v3" if model_mode == "strong_v3" else "Heat-only"
     live_out["aqi_status"] = "excluded"
     live_out["confidence_tag"] = np.select(
         [live_out["pred_prob_critical_t1"] >= 0.85, live_out["pred_prob_critical_t1"] >= 0.65],
@@ -385,7 +553,10 @@ def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_f
     raw_live_file = OUTPUTS / "api_forecast_alerts_step9.csv"
     # Keep raw API forecast as full historical table (no date deletion).
     live_out_full = upsert_history_by_date_district(raw_live_file, live_out)
-    live_out_full.to_csv(raw_live_file, index=False)
+    write_warnings = []
+    _, fb_raw, w_raw = write_csv_resilient(live_out_full, raw_live_file, index=False)
+    if fb_raw and w_raw:
+        write_warnings.append(w_raw)
 
     # Guardrail to avoid over-alerting
     mix = live_out["alert_level_next_day"].value_counts(normalize=True).mul(100)
@@ -428,19 +599,25 @@ def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_f
 
     guarded_file = OUTPUTS / "api_forecast_alerts_step9_guarded.csv"
     guarded_full = upsert_history_by_date_district(guarded_file, guarded)
-    guarded_full.to_csv(guarded_file, index=False)
+    _, fb_guarded, w_guarded = write_csv_resilient(guarded_full, guarded_file, index=False)
+    if fb_guarded and w_guarded:
+        write_warnings.append(w_guarded)
 
     # Historical top10 (all days) + latest day top10
     historical_top10_file = OUTPUTS / "api_daily_top10_guarded.csv"
-    guarded_full[guarded_full["rank_within_date"] <= 10].to_csv(historical_top10_file, index=False)
+    hist_top10_df = guarded_full[guarded_full["rank_within_date"] <= 10].copy()
+    _, fb_hist_top10, w_hist_top10 = write_csv_resilient(hist_top10_df, historical_top10_file, index=False)
+    if fb_hist_top10 and w_hist_top10:
+        write_warnings.append(w_hist_top10)
 
     latest_date = guarded_full["date"].max()
     latest_top10_file = OUTPUTS / "api_latest_top10_guarded.csv"
-    guarded_full[
+    latest_top10_df = guarded_full[
         (guarded_full["date"] == latest_date) & (guarded_full["rank_within_date"] <= 10)
-    ].to_csv(
-        latest_top10_file, index=False
-    )
+    ].copy()
+    _, fb_latest_top10, w_latest_top10 = write_csv_resilient(latest_top10_df, latest_top10_file, index=False)
+    if fb_latest_top10 and w_latest_top10:
+        write_warnings.append(w_latest_top10)
 
     # Reliability snapshot: confirms historical retention and zero key duplication.
     rel_file = DOCS / "step10_data_reliability_report.csv"
@@ -468,7 +645,9 @@ def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_f
     if rel_file.exists():
         old_rel = pd.read_csv(rel_file)
         rel_row = pd.concat([old_rel, rel_row], ignore_index=True)
-    rel_row.to_csv(rel_file, index=False)
+    _, fb_rel, w_rel = write_csv_resilient(rel_row, rel_file, index=False)
+    if fb_rel and w_rel:
+        write_warnings.append(w_rel)
 
     return {
         "api_input_file": str(api_file),
@@ -479,6 +658,7 @@ def build_api_live_guarded_alerts(api_file, clf, model_features, best_thr, api_f
         "api_historical_top10_file": str(historical_top10_file),
         "api_latest_top10_file": str(latest_top10_file),
         "api_reliability_report_file": str(rel_file),
+        "write_warnings": " | ".join(write_warnings),
     }
 
 
@@ -488,7 +668,7 @@ def append_run_log(entry):
     if run_log_file.exists():
         old = pd.read_csv(run_log_file)
         log_df = pd.concat([old, log_df], ignore_index=True)
-    log_df.to_csv(run_log_file, index=False)
+    write_csv_resilient(log_df, run_log_file, index=False)
     return run_log_file
 
 
@@ -549,16 +729,16 @@ def update_api_failsafe(run_log_file, run_time, window=2):
         if not old.empty and str(old.iloc[-1].get("failsafe_state", "")).strip().upper() == state:
             return {"failsafe_state": state, "alert_file": str(alert_file), "event_file": str(event_file)}
         event_row = pd.concat([old, event_row], ignore_index=True)
-    event_row.to_csv(event_file, index=False)
+    write_csv_resilient(event_row, event_file, index=False)
     return {"failsafe_state": state, "alert_file": str(alert_file), "event_file": str(event_file)}
 
 
 def main():
     run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
-        model_table, clf, model_features, best_thr = load_model_artifacts()
+        model_table, model_obj, model_features, best_thr, model_mode, model_name = load_model_artifacts()
         expected_districts = load_expected_districts()
-        hist_out = build_historical_auto_alerts(model_table, clf, model_features, best_thr)
+        hist_out = build_historical_auto_alerts(model_table, model_obj, model_features, best_thr, model_mode)
 
         api_status = "success"
         api_message = ""
@@ -597,9 +777,10 @@ def main():
 
             api_out = build_api_live_guarded_alerts(
                 selected_file,
-                clf,
+                model_obj,
                 model_features,
                 best_thr,
+                model_mode,
                 api_files_for_archive=valid_files,
             )
             api_message = api_stdout
@@ -611,9 +792,10 @@ def main():
                 api_status = "stale_fallback"
                 api_out = build_api_live_guarded_alerts(
                     fallback_file,
-                    clf,
+                    model_obj,
                     model_features,
                     best_thr,
+                    model_mode,
                     api_files_for_archive=valid_files,
                 )
                 api_message = f"Live API fetch failed; used fallback file: {fallback_file}\nError: {api_err}"
@@ -651,6 +833,13 @@ def main():
                 )
 
         status = "success" if api_status in ["success", "stale_fallback"] else "partial_success"
+        write_warning_parts = []
+        if hist_out.get("write_warnings"):
+            write_warning_parts.append(f"historical={hist_out['write_warnings']}")
+        if api_out.get("write_warnings"):
+            write_warning_parts.append(f"api={api_out['write_warnings']}")
+        write_warning_text = " | ".join(write_warning_parts)
+
         entry = {
             "run_time": run_time,
             "status": status,
@@ -658,6 +847,8 @@ def main():
             "rows": hist_out["rows"],
             "latest_date": hist_out["latest_date"],
             "best_threshold": best_thr,
+            "model_mode": model_mode,
+            "model_name": model_name,
             "full_file": hist_out["full_file"],
             "top10_file": hist_out["top10_file"],
             "latest_top10_file": hist_out["latest_top10_file"],
@@ -666,13 +857,16 @@ def main():
             "api_historical_top10_file": api_out.get("api_historical_top10_file", ""),
             "api_latest_top10_file": api_out.get("api_latest_top10_file", ""),
             "api_reliability_report_file": api_out.get("api_reliability_report_file", ""),
-            "message": f"{api_quality_message}\n{api_message}",
+            "message": f"{api_quality_message}\n{api_message}\n{write_warning_text}",
         }
         run_log_file = append_run_log(entry)
         failsafe = update_api_failsafe(run_log_file, run_time, window=2)
 
         print("Automation run complete.")
         print("Status:", status)
+        print("Model mode:", model_mode)
+        print("Model name:", model_name)
+        print("Model threshold:", best_thr)
         print("Historical full alerts:", hist_out["full_file"])
         print("Historical top10:", hist_out["top10_file"])
         print("Historical latest top10:", hist_out["latest_top10_file"])
@@ -681,10 +875,14 @@ def main():
             print("API historical top10:", api_out["api_historical_top10_file"])
             print("API latest top10:", api_out["api_latest_top10_file"])
             print("API reliability report:", api_out["api_reliability_report_file"])
+            if api_out.get("write_warnings"):
+                print("Write warnings:", api_out["write_warnings"])
             if api_status == "stale_fallback":
                 print("API mode: stale fallback (last available API file used).")
         else:
             print("API output unavailable in this run.")
+        if hist_out.get("write_warnings"):
+            print("Historical write warnings:", hist_out["write_warnings"])
         print("API fail-safe state:", failsafe["failsafe_state"])
         print("API fail-safe note:", failsafe["alert_file"])
         print("Log:", run_log_file)
