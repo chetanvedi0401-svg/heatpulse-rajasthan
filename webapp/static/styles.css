@@ -158,6 +158,11 @@ body.theme-night{
   transition:.2s ease;
 }
 .pill-btn:hover{transform:translateY(-1px);background:rgba(2,132,199,.36)}
+.pill-btn.is-active{
+  border-color:rgba(251,191,36,.7);
+  background:linear-gradient(135deg, rgba(245,158,11,.3), rgba(59,130,246,.28));
+  color:#fff7df;
+}
 
 .ticker{
   display:grid;
@@ -260,6 +265,28 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
   margin-top:2px;
   font-size:13px;
   color:#f2f8ff;
+}
+.cinematic-layers{
+  margin-top:10px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.layer-chip{
+  border:1px solid rgba(148,163,184,.35);
+  border-radius:999px;
+  padding:6px 12px;
+  background:rgba(9,21,40,.55);
+  color:#d9eaff;
+  font-size:12px;
+  font-weight:700;
+  transition:.25s ease;
+}
+.layer-chip.is-active{
+  border-color:rgba(250,204,21,.7);
+  color:#fffbe8;
+  background:linear-gradient(125deg, rgba(245,158,11,.38), rgba(14,165,233,.35));
+  box-shadow:0 0 18px rgba(245,158,11,.25);
 }
 
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
@@ -770,11 +797,42 @@ details[open] p{animation:faqFade .22s ease}
   .simple-strip{grid-template-columns:1fr 1fr}
   .grid-two{grid-template-columns:1fr}
   .hero-badge{min-width:100px}
+  .cinematic-layers{gap:6px}
+  .layer-chip{padding:5px 10px}
   .nav-pills{margin-top:6px}
   .top-nav{flex-direction:column;align-items:flex-start}
   .plan-grid{grid-template-columns:1fr}
   .why-grid{grid-template-columns:1fr}
   .formula-grid{grid-template-columns:1fr}
+}
+
+body.cinematic-mode .top-nav{
+  border-color:rgba(251,191,36,.25);
+  background:linear-gradient(120deg,rgba(11,17,33,.9),rgba(13,40,74,.86));
+  box-shadow:0 16px 34px rgba(0,0,0,.33);
+}
+body.cinematic-mode .hero{
+  border-color:rgba(250,204,21,.2);
+  background:
+    radial-gradient(420px 160px at 82% 18%, rgba(250,204,21,.16), transparent 64%),
+    radial-gradient(420px 140px at 18% 2%, rgba(125,211,252,.18), transparent 62%),
+    linear-gradient(115deg,rgba(8,13,26,.9),rgba(9,49,90,.74));
+  box-shadow:0 28px 50px rgba(0,0,0,.42);
+}
+body.cinematic-mode .card,
+body.cinematic-mode .metric-card,
+body.cinematic-mode .simple-card,
+body.cinematic-mode .compare-box{
+  border-color:rgba(148,163,184,.24);
+  background:
+    linear-gradient(155deg, rgba(8,16,30,.8), rgba(14,37,66,.82));
+  backdrop-filter: blur(8px);
+}
+body.cinematic-mode .weather-icon{
+  box-shadow:0 0 30px rgba(251,191,36,.48), 0 0 46px rgba(59,130,246,.28);
+}
+body.cinematic-mode .ticker-track{
+  animation-duration:24s;
 }
 
 @media (max-width: 640px){
