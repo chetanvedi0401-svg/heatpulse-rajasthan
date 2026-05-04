@@ -491,6 +491,9 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
   color:#d8e9ff;
   font-size:13px;
 }
+.why-list li.is-empty{
+  display:none;
+}
 .why-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -581,6 +584,24 @@ h1{margin:6px 0 8px;font-size:34px;line-height:1.12}
 .panel-shell{position:relative}
 .chart-shell{min-height:230px}
 .table-shell{min-height:320px}
+.map-empty{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:16px;
+  border-radius:12px;
+  border:1px dashed rgba(125,211,252,.28);
+  background:rgba(8,20,38,.62);
+  color:#cfe2ff;
+  font-size:13px;
+  z-index:350;
+}
+.map-empty.show{
+  display:flex;
+}
 .panel-skeleton{
   position:absolute;
   inset:0;
