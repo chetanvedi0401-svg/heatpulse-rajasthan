@@ -158,6 +158,18 @@ body.theme-night{
   transition:.2s ease;
 }
 .pill-btn:hover{transform:translateY(-1px);background:rgba(2,132,199,.36)}
+.pill-link{
+  text-decoration:none;
+  border:1px solid rgba(103,232,249,.35);
+  border-radius:999px;
+  padding:6px 12px;
+  color:#d7f4ff;
+  background:rgba(2,132,199,.18);
+  font-size:12px;
+  font-weight:700;
+  transition:.2s ease;
+}
+.pill-link:hover{transform:translateY(-1px);background:rgba(2,132,199,.34)}
 
 .ticker{
   display:grid;
@@ -727,6 +739,67 @@ tbody tr:hover{background:rgba(59,130,246,.08)}
 .plan-label{display:block;color:#9fb6d8;font-size:12px;margin-bottom:4px}
 .plan-box strong{font-size:15px;color:#f8fafc}
 .plan-summary{margin-top:10px;font-size:13px;color:#d4e7ff}
+.advisory-subtext{
+  margin:0 0 10px;
+  color:#b8cfee;
+  font-size:13px;
+}
+.context-list{
+  display:grid;
+  gap:8px;
+  margin-bottom:10px;
+}
+.context-item{
+  border:1px solid rgba(148,163,184,.24);
+  border-radius:10px;
+  background:rgba(12,28,50,.55);
+  padding:9px 10px;
+  color:#dcecff;
+  font-size:13px;
+}
+.advisory-list{
+  display:grid;
+  gap:8px;
+}
+.advisory-item{
+  border:1px solid rgba(148,163,184,.24);
+  border-radius:10px;
+  background:rgba(8,19,36,.52);
+  padding:10px;
+}
+.advisory-item a{
+  color:#7dd3fc;
+  text-decoration:none;
+  font-weight:700;
+}
+.advisory-item a:hover{text-decoration:underline}
+.advisory-src{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+  color:#9eb8da;
+}
+.notify-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:10px;
+}
+.notify-btn{
+  width:100%;
+}
+.notify-result{
+  margin:10px 0 0;
+  border:1px solid rgba(148,163,184,.24);
+  border-radius:10px;
+  background:rgba(8,18,34,.55);
+  color:#d8e9ff;
+  font-size:12px;
+  line-height:1.4;
+  padding:10px;
+  min-height:88px;
+  white-space:pre-wrap;
+}
 
 .faq-card details{
   border:1px solid var(--line);
@@ -773,6 +846,7 @@ details[open] p{animation:faqFade .22s ease}
   .nav-pills{margin-top:6px}
   .top-nav{flex-direction:column;align-items:flex-start}
   .plan-grid{grid-template-columns:1fr}
+  .notify-grid{grid-template-columns:1fr}
   .why-grid{grid-template-columns:1fr}
   .formula-grid{grid-template-columns:1fr}
 }
