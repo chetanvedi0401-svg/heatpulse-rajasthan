@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
+  <div id="scrollProgress" class="scroll-progress" aria-hidden="true"></div>
+  <div id="cursorGlow" class="cursor-glow" aria-hidden="true"></div>
+  <div id="heatField" class="heat-field" aria-hidden="true"></div>
   <div class="bg-glow one"></div>
   <div class="bg-glow two"></div>
 
@@ -38,6 +41,11 @@
         <p id="heroKicker" class="kicker">Live Heat Intelligence</p>
         <h1 id="heroTitle">District Heat Risk Command Center</h1>
         <p id="forecastWindow" class="subtitle">Loading forecast window...</p>
+        <div class="hero-badges">
+          <div class="hero-badge"><span>Model</span><strong id="heroModelMode">-</strong></div>
+          <div class="hero-badge"><span>Pipeline</span><strong id="heroPipelineStatus">-</strong></div>
+          <div class="hero-badge"><span>Districts</span><strong id="heroDistrictCount">-</strong></div>
+        </div>
         <div id="mixChips" class="chips"></div>
       </div>
       <div class="hero-right">
