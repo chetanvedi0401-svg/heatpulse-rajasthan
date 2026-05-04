@@ -104,6 +104,16 @@ const els = {
   scrollProgress: document.getElementById("scrollProgress"),
   cursorGlow: document.getElementById("cursorGlow"),
   heatField: document.getElementById("heatField"),
+  miniLink: document.getElementById("miniLink"),
+  advisoryTitle: document.getElementById("advisoryTitle"),
+  advisorySubtext: document.getElementById("advisorySubtext"),
+  contextNotes: document.getElementById("contextNotes"),
+  officialAdvisories: document.getElementById("officialAdvisories"),
+  notifyTitle: document.getElementById("notifyTitle"),
+  notifyChannel: document.getElementById("notifyChannel"),
+  notifyDryRun: document.getElementById("notifyDryRun"),
+  notifySendBtn: document.getElementById("notifySendBtn"),
+  notifyResult: document.getElementById("notifyResult"),
 };
 
 const labels = {
@@ -175,6 +185,11 @@ const labels = {
     compareRiskLabel: "Risk Delta",
     compareTmaxLabel: "Tmax Delta",
     compareAlertLabel: "Alert Pair",
+    miniLink: "Mini Dashboard",
+    advisoryTitle: "Official Advisories & Context",
+    advisorySubtext: "Live context + official guidance links for heat action planning.",
+    notifyTitle: "SMS / WhatsApp Alert Dispatch",
+    notifySendBtn: "Send Alert Digest",
   },
   hi: {
     heroKicker: "Live Heat Intelligence",
@@ -244,6 +259,11 @@ const labels = {
     compareRiskLabel: "Risk Delta",
     compareTmaxLabel: "Tmax Delta",
     compareAlertLabel: "Alert Pair",
+    miniLink: "Mini Dashboard",
+    advisoryTitle: "Official Advisories & Context",
+    advisorySubtext: "Live context + official guidance links for heat action planning.",
+    notifyTitle: "SMS / WhatsApp Alert Dispatch",
+    notifySendBtn: "Send Alert Digest",
   },
 };
 
@@ -640,6 +660,11 @@ function applyLanguage() {
   setText("compareRiskLabel", t.compareRiskLabel);
   setText("compareTmaxLabel", t.compareTmaxLabel);
   setText("compareAlertLabel", t.compareAlertLabel);
+  setText("miniLink", t.miniLink);
+  setText("advisoryTitle", t.advisoryTitle);
+  setText("advisorySubtext", t.advisorySubtext);
+  setText("notifyTitle", t.notifyTitle);
+  setText("notifySendBtn", t.notifySendBtn);
 }
 
 function setFsButtonText() {
@@ -1014,6 +1039,38 @@ function renderTrend(trend) {
   });
 }
 
+function renderAdvisories(data) {
+  if (els.contextNotes) {
+    const items = Array.isArray(data?.context) ? data.context : [];
+    els.contextNotes.innerHTML = items.length
+      ? items.map((x) => `<div class="context-item">${x}</div>`).join("")
+      : `<div class="context-item">No contextual notes available.</div>`;
+  }
+
+  if (els.officialAdvisories) {
+    const official = Array.isArray(data?.official) ? data.official : [];
+    els.officialAdvisories.innerHTML = official.length
+      ? official
+          .map(
+            (x) => `
+          <div class="advisory-item">
+            <a href="${x.url}" target="_blank" rel="noopener noreferrer">${x.title}</a>
+            <span class="advisory-src">${x.source}</span>
+          </div>
+        `
+          )
+          .join("")
+      : `<div class="advisory-item">No advisory links configured.</div>`;
+  }
+}
+
+async function loadAdvisories() {
+  const district = els.district.value;
+  const date = els.date.value;
+  const data = await jget(`/api/advisories?district=${encodeURIComponent(district)}&date=${encodeURIComponent(date)}`);
+  renderAdvisories(data);
+}
+
 function renderPlanner(current) {
   const plan = safetyPlan(current);
   els.planHydration.textContent = plan.hydration;
@@ -1205,6 +1262,7 @@ async function loadSelection() {
     lastSelectedDistrict = district;
     renderTicker(lastDayItems, date);
     renderComparePanel(district, lastDayItems);
+    await loadAdvisories();
     await loadRisers();
     els.downloadDayBtn.href = `/download/day.csv?date=${encodeURIComponent(date)}`;
   } finally {
@@ -1236,6 +1294,29 @@ els.refresh.addEventListener("click", async () => {
     await init();
   } finally {
     setRefreshLoading(false);
+  }
+});
+
+els.notifySendBtn?.addEventListener("click", async () => {
+  const payload = {
+    date: els.date.value,
+    district: els.district.value,
+    channel: els.notifyChannel?.value || "sms",
+    dry_run: String(els.notifyDryRun?.value || "true") === "true",
+  };
+  els.notifySendBtn.disabled = true;
+  try {
+    const r = await fetch("/api/notify/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const out = await r.json();
+    els.notifyResult.textContent = JSON.stringify(out, null, 2);
+  } catch (e) {
+    els.notifyResult.textContent = `Dispatch failed: ${e}`;
+  } finally {
+    els.notifySendBtn.disabled = false;
   }
 });
 
