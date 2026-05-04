@@ -74,6 +74,7 @@ const els = {
   statusApiValue: document.getElementById("statusApiValue"),
   statusSourceValue: document.getElementById("statusSourceValue"),
   mapShell: document.getElementById("mapShell"),
+  mapEmpty: document.getElementById("mapEmpty"),
   trendShell: document.getElementById("trendShell"),
   topShell: document.getElementById("topShell"),
   riserShell: document.getElementById("riserShell"),
@@ -154,7 +155,7 @@ const labels = {
     forecastPrefix: "Forecast window:",
     formulaLine: "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Heatwave Probability × 100)",
     tempOnlyNote: "Note: Higher temperature can increase risk, but final color also depends on model probability and policy thresholds.",
-    statusUpdatedLabel: "Last Updated",
+    statusUpdatedLabel: "Last Updated (IST)",
     statusApiLabel: "API Status",
     statusSourceLabel: "Source Date",
     solarKicker: "Sun Window",
@@ -223,7 +224,7 @@ const labels = {
     forecastPrefix: "Forecast window:",
     formulaLine: "Risk Score = 0.65 × Heat Stress Score + 0.35 × (Heatwave Probability × 100)",
     tempOnlyNote: "Note: Temperature badhne se risk badh sakta hai, lekin final color model probability aur policy thresholds par bhi depend karta hai.",
-    statusUpdatedLabel: "Last Updated",
+    statusUpdatedLabel: "Last Updated (IST)",
     statusApiLabel: "API Status",
     statusSourceLabel: "Source Date",
     solarKicker: "Surya Window",
@@ -662,8 +663,31 @@ function formatApiStatus(apiStatus, pipelineStatus) {
   return a || p || "unknown";
 }
 
+function formatUtcToIst(utcText) {
+  const s = String(utcText || "").trim();
+  if (!s) return "-";
+  const m = s.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?\s+UTC$/i);
+  if (!m) return s;
+
+  const sec = Number(m[4] || "0");
+  const dt = new Date(`${m[1]}T${m[2]}:${m[3]}:${String(sec).padStart(2, "0")}Z`);
+  if (Number.isNaN(dt.getTime())) return s;
+
+  const fmt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(dt).map((p) => [p.type, p.value]));
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute} IST`;
+}
+
 function renderStatus(meta) {
-  const updated = meta.live_file_updated_at_utc || "-";
+  const updated = formatUtcToIst(meta.live_file_updated_at_utc || "-");
   const sourceDate = meta.api_source_date || meta.latest_date || "-";
   const apiStatus = formatApiStatus(meta.api_status, meta.pipeline_status);
 
@@ -828,16 +852,28 @@ function ensureMap() {
 }
 
 function renderMap(items) {
-  ensureMap();
+  try {
+    ensureMap();
+  } catch (_) {
+    if (els.mapEmpty) {
+      els.mapEmpty.textContent = "Map failed to initialize. Please refresh.";
+      els.mapEmpty.classList.add("show");
+    }
+    return;
+  }
   if (markerLayer) markerLayer.clearLayers();
   markerLayer = L.layerGroup().addTo(map);
   const districtLabel = isHi() ? "Jila" : "District";
   const alertLabel = "Alert";
   const riskLabel = "Risk";
   const tmaxLabel = "Tmax";
+  const bounds = [];
+  let markerCount = 0;
   items.forEach((r) => {
-    if (!r.latitude || !r.longitude) return;
-    const marker = L.circleMarker([r.latitude, r.longitude], {
+    const lat = Number(r.latitude);
+    const lon = Number(r.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) return;
+    const marker = L.circleMarker([lat, lon], {
       radius: 8,
       color: alertColor(r.alert_level_next_day),
       fillColor: alertColor(r.alert_level_next_day),
@@ -848,7 +884,18 @@ function renderMap(items) {
       `<b>${districtLabel}: ${r.district}</b><br>${alertLabel}: ${r.alert_level_next_day}<br>${riskLabel}: ${r.risk_score_next_day.toFixed(2)}<br>${tmaxLabel}: ${r.tmax_c.toFixed(1)}`
     );
     marker.addTo(markerLayer);
+    bounds.push([lat, lon]);
+    markerCount += 1;
   });
+
+  if (markerCount > 0) {
+    if (els.mapEmpty) els.mapEmpty.classList.remove("show");
+    map.fitBounds(bounds, { padding: [16, 16], maxZoom: 7 });
+  } else if (els.mapEmpty) {
+    els.mapEmpty.textContent = "Map data unavailable for this selection.";
+    els.mapEmpty.classList.add("show");
+  }
+  setTimeout(() => map.invalidateSize(), 120);
 }
 
 function renderTrend(trend) {
@@ -952,9 +999,17 @@ function renderSimpleCards(current) {
 function renderWhyPanel(current, comparison) {
   const t = labels[currentLang];
   const reasons = buildWhyReasons(current, comparison);
-  els.whyReason1.textContent = reasons[0] || "-";
-  els.whyReason2.textContent = reasons[1] || "-";
-  els.whyReason3.textContent = reasons[2] || "-";
+  const reasonEls = [els.whyReason1, els.whyReason2, els.whyReason3];
+  reasonEls.forEach((el, idx) => {
+    const txt = String(reasons[idx] || "").trim();
+    if (txt) {
+      el.textContent = txt;
+      el.classList.remove("is-empty");
+    } else {
+      el.textContent = "";
+      el.classList.add("is-empty");
+    }
+  });
 
   els.whyPrevDate.textContent = comparison?.previous_date || "-";
   els.whyPrevRisk.textContent =
