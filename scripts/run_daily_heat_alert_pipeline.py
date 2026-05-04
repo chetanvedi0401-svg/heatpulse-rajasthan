@@ -201,8 +201,19 @@ def patch_sklearn_model_compat(clf):
 
 
 def load_model_artifacts():
-    strong_model_file = MODELS / "heatwave_model_step13_strong.joblib"
+    stronger_model_file = MODELS / "heatwave_model_step14_stronger.joblib"
     strong_table_file = PROCESSED / "model_table_step12_heatwave_v2.csv"
+
+    if stronger_model_file.exists() and strong_table_file.exists():
+        bundle = joblib.load(stronger_model_file)
+        model_table = pd.read_csv(strong_table_file, parse_dates=["date"])
+        model_features = [str(x).strip() for x in bundle.get("features", []) if str(x).strip()]
+        best_thr = float(bundle.get("median_threshold", 0.5))
+        model_obj = bundle.get("artifact", bundle)
+        model_name = str(bundle.get("model_name", "stronger_model"))
+        return model_table, model_obj, model_features, best_thr, "strong_v4", model_name
+
+    strong_model_file = MODELS / "heatwave_model_step13_strong.joblib"
 
     if strong_model_file.exists() and strong_table_file.exists():
         bundle = joblib.load(strong_model_file)
@@ -319,7 +330,7 @@ def add_v3_features(df):
 
 
 def map_alert(prob, score, thr, model_mode="legacy_v1"):
-    if model_mode == "strong_v3":
+    if model_mode in {"strong_v3", "strong_v4"}:
         red_cut = max(min(thr + 0.55, 0.90), 0.75)
         orange_cut = max(min(thr + 0.35, 0.80), 0.55)
         yellow_cut = max(min(thr + 0.20, 0.65), 0.40)
@@ -391,7 +402,12 @@ def build_historical_auto_alerts(model_table, model_obj, model_features, best_th
     alerts_df["rank_within_date"] = (
         alerts_df.groupby("date")["risk_score_next_day"].rank(method="first", ascending=False).astype(int)
     )
-    alerts_df["pipeline_mode"] = "Heatwave-v3" if model_mode == "strong_v3" else "Heat-only"
+    if model_mode == "strong_v4":
+        alerts_df["pipeline_mode"] = "Heatwave-v4"
+    elif model_mode == "strong_v3":
+        alerts_df["pipeline_mode"] = "Heatwave-v3"
+    else:
+        alerts_df["pipeline_mode"] = "Heat-only"
     alerts_df["aqi_status"] = "excluded"
     alerts_df["confidence_tag"] = np.select(
         [alerts_df["pred_prob_critical_t1"] >= 0.85, alerts_df["pred_prob_critical_t1"] >= 0.65],
@@ -540,7 +556,12 @@ def build_api_live_guarded_alerts(api_file, model_obj, model_features, best_thr,
     live_out["rank_within_date"] = (
         live_out.groupby("date")["risk_score_next_day"].rank(method="first", ascending=False).astype(int)
     )
-    live_out["pipeline_mode"] = "Heatwave-v3" if model_mode == "strong_v3" else "Heat-only"
+    if model_mode == "strong_v4":
+        live_out["pipeline_mode"] = "Heatwave-v4"
+    elif model_mode == "strong_v3":
+        live_out["pipeline_mode"] = "Heatwave-v3"
+    else:
+        live_out["pipeline_mode"] = "Heat-only"
     live_out["aqi_status"] = "excluded"
     live_out["confidence_tag"] = np.select(
         [live_out["pred_prob_critical_t1"] >= 0.85, live_out["pred_prob_critical_t1"] >= 0.65],
