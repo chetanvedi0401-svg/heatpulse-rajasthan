@@ -98,6 +98,12 @@ const els = {
   compareTmaxValue: document.getElementById("compareTmaxValue"),
   compareAlertLabel: document.getElementById("compareAlertLabel"),
   compareAlertValue: document.getElementById("compareAlertValue"),
+  heroModelMode: document.getElementById("heroModelMode"),
+  heroPipelineStatus: document.getElementById("heroPipelineStatus"),
+  heroDistrictCount: document.getElementById("heroDistrictCount"),
+  scrollProgress: document.getElementById("scrollProgress"),
+  cursorGlow: document.getElementById("cursorGlow"),
+  heatField: document.getElementById("heatField"),
 };
 
 const labels = {
@@ -694,6 +700,17 @@ function renderStatus(meta) {
   els.statusUpdatedValue.textContent = updated;
   els.statusApiValue.textContent = apiStatus;
   els.statusSourceValue.textContent = sourceDate;
+  if (els.heroModelMode) {
+    const mm = String(meta.pipeline_model_mode || "").trim();
+    const mn = String(meta.pipeline_model_name || "").trim();
+    els.heroModelMode.textContent = mm && mn ? `${mm} / ${mn}` : (mm || mn || "unknown");
+  }
+  if (els.heroPipelineStatus) {
+    els.heroPipelineStatus.textContent = String(meta.pipeline_status || "-");
+  }
+  if (els.heroDistrictCount) {
+    els.heroDistrictCount.textContent = String((meta.districts || []).length || "-");
+  }
 
   const apiItem = els.statusApiValue.closest(".status-item");
   if (apiItem) {
@@ -706,6 +723,75 @@ function renderStatus(meta) {
       apiItem.classList.add("status-unknown");
     }
   }
+}
+
+function setupScrollProgress() {
+  const bar = els.scrollProgress;
+  if (!bar) return;
+  const update = () => {
+    const doc = document.documentElement;
+    const max = Math.max(1, doc.scrollHeight - doc.clientHeight);
+    const pct = Math.max(0, Math.min(100, (doc.scrollTop / max) * 100));
+    bar.style.width = `${pct.toFixed(2)}%`;
+  };
+  window.addEventListener("scroll", update, { passive: true });
+  update();
+}
+
+function setupCursorGlow() {
+  const glow = els.cursorGlow;
+  if (!glow) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    glow.style.display = "none";
+    return;
+  }
+  const move = (e) => {
+    glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+  };
+  window.addEventListener("mousemove", move, { passive: true });
+  window.addEventListener("mouseleave", () => { glow.style.opacity = "0"; });
+  window.addEventListener("mouseenter", () => { glow.style.opacity = ".45"; });
+}
+
+function setupHeatParticles() {
+  const host = els.heatField;
+  if (!host) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  host.innerHTML = "";
+  const count = window.innerWidth < 700 ? 10 : 18;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("span");
+    p.className = "heat-particle";
+    p.style.setProperty("--left", `${Math.random() * 100}%`);
+    p.style.setProperty("--delay", `${(Math.random() * 12).toFixed(2)}s`);
+    p.style.setProperty("--dur", `${(11 + Math.random() * 8).toFixed(2)}s`);
+    const size = 5 + Math.random() * 6;
+    p.style.width = `${size.toFixed(1)}px`;
+    p.style.height = `${size.toFixed(1)}px`;
+    host.appendChild(p);
+  }
+}
+
+function setupCardTilt() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (window.innerWidth < 992) return;
+  const cards = document.querySelectorAll(".metric-card, .simple-card, .compare-box, .card");
+  cards.forEach((card) => {
+    card.addEventListener("mousemove", (e) => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      card.style.setProperty("--mx", `${x}%`);
+      card.style.setProperty("--my", `${y}%`);
+    });
+  });
+}
+
+function setupVisualPolish() {
+  setupScrollProgress();
+  setupCursorGlow();
+  setupHeatParticles();
+  setupCardTilt();
 }
 
 function setMixChips(mix) {
@@ -1172,6 +1258,7 @@ els.fsBtn.addEventListener("click", async () => {
 document.addEventListener("fullscreenchange", setFsButtonText);
 
 setupRevealAnimations();
+setupVisualPolish();
 
 init().catch((e) => {
   console.error(e);
