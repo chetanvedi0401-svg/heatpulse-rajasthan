@@ -865,7 +865,12 @@ def main():
                     }
                 )
 
-        status = "success" if api_status in ["success", "stale_fallback"] else "partial_success"
+        if api_status == "success":
+            status = "success"
+        elif api_status == "stale_fallback":
+            status = "partial_success"
+        else:
+            status = "partial_success"
         write_warning_parts = []
         if hist_out.get("write_warnings"):
             write_warning_parts.append(f"historical={hist_out['write_warnings']}")
