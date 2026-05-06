@@ -766,46 +766,58 @@ def main():
         api_quality_message = ""
         api_out = {}
         try:
-            api_file, api_stdout = fetch_latest_api_file()
-            valid_files, quality_rows = list_valid_api_files(expected_districts)
-            fetched_quality = evaluate_api_quality(api_file, expected_districts)
+            last_live_err = None
+            for live_attempt in [1, 2]:
+                try:
+                    api_file, api_stdout = fetch_latest_api_file()
+                    valid_files, quality_rows = list_valid_api_files(expected_districts)
+                    fetched_quality = evaluate_api_quality(api_file, expected_districts)
 
-            if fetched_quality["is_valid"]:
-                selected_file = api_file
-                selected_mode = "live_valid"
-                api_status = "success"
-            else:
-                # Latest valid fallback from archive
-                selected_file = valid_files[-1] if valid_files else None
-                selected_mode = "fallback_valid_archive" if selected_file is not None else "no_valid_api_file"
-                api_status = "stale_fallback" if selected_file is not None else "failed"
+                    if fetched_quality["is_valid"]:
+                        selected_file = api_file
+                        selected_mode = "live_valid" if live_attempt == 1 else "live_valid_retry2"
+                        api_status = "success"
+                    else:
+                        # Latest valid fallback from archive
+                        selected_file = valid_files[-1] if valid_files else None
+                        selected_mode = "fallback_valid_archive" if selected_file is not None else "no_valid_api_file"
+                        api_status = "stale_fallback" if selected_file is not None else "failed"
 
-            append_api_quality_gate_log(
-                {
-                    "run_time": run_time,
-                    "fetched_file": str(api_file),
-                    "fetched_valid": fetched_quality["is_valid"],
-                    "selected_mode": selected_mode,
-                    "selected_file": str(selected_file) if selected_file is not None else "",
-                    "valid_archive_files": len(valid_files),
-                    "invalid_archive_files": len(quality_rows) - len(valid_files),
-                    "fetched_reason": fetched_quality["reason"],
-                }
-            )
+                    append_api_quality_gate_log(
+                        {
+                            "run_time": run_time,
+                            "fetched_file": str(api_file),
+                            "fetched_valid": fetched_quality["is_valid"],
+                            "selected_mode": selected_mode,
+                            "selected_file": str(selected_file) if selected_file is not None else "",
+                            "valid_archive_files": len(valid_files),
+                            "invalid_archive_files": len(quality_rows) - len(valid_files),
+                            "fetched_reason": fetched_quality["reason"],
+                        }
+                    )
 
-            if selected_file is None:
-                raise RuntimeError("No quality-valid API file available in archive.")
+                    if selected_file is None:
+                        raise RuntimeError("No quality-valid API file available in archive.")
 
-            api_out = build_api_live_guarded_alerts(
-                selected_file,
-                model_obj,
-                model_features,
-                best_thr,
-                model_mode,
-                api_files_for_archive=valid_files,
-            )
-            api_message = api_stdout
-            api_quality_message = f"quality_mode={selected_mode}; selected_file={selected_file}"
+                    api_out = build_api_live_guarded_alerts(
+                        selected_file,
+                        model_obj,
+                        model_features,
+                        best_thr,
+                        model_mode,
+                        api_files_for_archive=valid_files,
+                    )
+                    api_message = api_stdout
+                    api_quality_message = f"quality_mode={selected_mode}; selected_file={selected_file}"
+                    last_live_err = None
+                    break
+                except Exception as live_err:
+                    last_live_err = live_err
+                    if live_attempt == 1:
+                        # One extra live retry helps avoid transient network/rate-limit fallback.
+                        time.sleep(45)
+                        continue
+                    raise last_live_err
         except Exception as api_err:
             valid_files, quality_rows = list_valid_api_files(expected_districts)
             fallback_file = valid_files[-1] if valid_files else None
