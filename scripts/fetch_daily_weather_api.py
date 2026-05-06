@@ -1,10 +1,13 @@
 
-import pandas as pd
-from pathlib import Path
-import requests
-from datetime import datetime
 import os
 import time
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # Resolve project root dynamically so the same script works on local machine and cloud runners.
 ROOT = Path(os.getenv("PROJECT_ROOT", Path(__file__).resolve().parents[1]))
@@ -25,50 +28,119 @@ retry_backoff_sec = int(cfg_map.get("retry_backoff_sec", 2))
 all_rows = []
 today_tag = datetime.now().strftime("%Y%m%d")
 
-for _, row in coords.iterrows():
-    district = row["district"]
-    lat = float(row["latitude"])
-    lon = float(row["longitude"])
+
+def _build_session():
+    session = requests.Session()
+    retries = Retry(
+        total=max(3, retry_count),
+        connect=max(3, retry_count),
+        read=max(3, retry_count),
+        backoff_factor=max(1, retry_backoff_sec),
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"],
+    )
+    adapter = HTTPAdapter(max_retries=retries, pool_connections=20, pool_maxsize=20)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    session.headers.update({"User-Agent": "heatwatch-rajasthan/1.0"})
+    return session
+
+
+def _rows_from_daily_payload(district, data):
+    rows = []
+    daily = data.get("daily", {}) if isinstance(data, dict) else {}
+    dates = daily.get("time", [])
+    tmax = daily.get("temperature_2m_max", [])
+    tmin = daily.get("temperature_2m_min", [])
+    rain = daily.get("precipitation_sum", [])
+    for d, tx, tn, rn in zip(dates, tmax, tmin, rain):
+        rows.append(
+            {
+                "date": d,
+                "district": district,
+                "rain_mm": rn,
+                "tmax_c": tx,
+                "tmin_c": tn,
+            }
+        )
+    return rows
+
+
+def _fetch_batch(session):
+    # Open-Meteo supports multiple coordinates in one request.
+    districts = coords["district"].astype(str).tolist()
+    lats = ",".join([str(float(x)) for x in coords["latitude"]])
+    lons = ",".join([str(float(x)) for x in coords["longitude"]])
 
     params = {
-        "latitude": lat,
-        "longitude": lon,
+        "latitude": lats,
+        "longitude": lons,
         "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
         "timezone": timezone,
-        "forecast_days": 2
+        "forecast_days": 2,
     }
 
-    ok = False
-    last_err = None
-    for _try in range(retry_count):
-        try:
-            r = requests.get(base_url, params=params, timeout=20)
-            r.raise_for_status()
-            data = r.json()
+    r = session.get(base_url, params=params, timeout=(10, 40))
+    r.raise_for_status()
+    payload = r.json()
 
-            daily = data.get("daily", {})
-            dates = daily.get("time", [])
-            tmax = daily.get("temperature_2m_max", [])
-            tmin = daily.get("temperature_2m_min", [])
-            rain = daily.get("precipitation_sum", [])
+    rows = []
+    if isinstance(payload, list):
+        for i, item in enumerate(payload):
+            if i >= len(districts):
+                continue
+            rows.extend(_rows_from_daily_payload(districts[i], item))
+    elif isinstance(payload, dict):
+        # Some runtimes may return a single-structure response.
+        rows.extend(_rows_from_daily_payload(districts[0], payload))
+    return rows
 
-            for d, tx, tn, rn in zip(dates, tmax, tmin, rain):
-                all_rows.append({
-                    "date": d,
-                    "district": district,
-                    "rain_mm": rn,
-                    "tmax_c": tx,
-                    "tmin_c": tn
-                })
-            ok = True
-            break
-        except Exception as e:
-            last_err = str(e)
-            if _try < retry_count - 1 and retry_backoff_sec > 0:
-                time.sleep(retry_backoff_sec)
 
-    if not ok:
-        print(f"Failed district: {district} | error: {last_err}")
+def _fetch_per_district(session):
+    rows = []
+    for _, row in coords.iterrows():
+        district = row["district"]
+        lat = float(row["latitude"])
+        lon = float(row["longitude"])
+
+        params = {
+            "latitude": lat,
+            "longitude": lon,
+            "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
+            "timezone": timezone,
+            "forecast_days": 2,
+        }
+
+        ok = False
+        last_err = None
+        for _try in range(max(3, retry_count)):
+            try:
+                r = session.get(base_url, params=params, timeout=(10, 30))
+                r.raise_for_status()
+                rows.extend(_rows_from_daily_payload(district, r.json()))
+                ok = True
+                break
+            except Exception as e:
+                last_err = str(e)
+                if _try < max(3, retry_count) - 1 and retry_backoff_sec > 0:
+                    time.sleep(retry_backoff_sec * (_try + 1))
+        if not ok:
+            print(f"Failed district: {district} | error: {last_err}")
+        time.sleep(0.15)
+    return rows
+
+
+session = _build_session()
+batch_err = None
+try:
+    all_rows = _fetch_batch(session)
+    if len(all_rows) < 20:
+        raise RuntimeError(f"batch_rows_too_low={len(all_rows)}")
+    print(f"Batch API fetch rows: {len(all_rows)}")
+except Exception as e:
+    batch_err = str(e)
+    print(f"Batch fetch failed, falling back to per-district mode: {batch_err}")
+    all_rows = _fetch_per_district(session)
 
 if not all_rows:
     raise RuntimeError("No API rows fetched. Check connectivity or config.")
