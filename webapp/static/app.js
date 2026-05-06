@@ -694,6 +694,16 @@ function formatApiStatus(apiStatus, pipelineStatus) {
   return a || p || "unknown";
 }
 
+function formatPipelineStatus(pipelineStatus, apiStatus) {
+  const p = String(pipelineStatus || "").toLowerCase();
+  const a = String(apiStatus || "").toLowerCase();
+  if (a === "stale_fallback" && (p === "success" || p === "partial_success")) {
+    return "success (fallback data)";
+  }
+  if (a === "success" && p === "success") return "success (live api)";
+  return String(pipelineStatus || "-");
+}
+
 function formatUtcToIst(utcText) {
   const s = String(utcText || "").trim();
   if (!s) return "-";
@@ -731,7 +741,7 @@ function renderStatus(meta) {
     els.heroModelMode.textContent = mm && mn ? `${mm} / ${mn}` : (mm || mn || "unknown");
   }
   if (els.heroPipelineStatus) {
-    els.heroPipelineStatus.textContent = String(meta.pipeline_status || "-");
+    els.heroPipelineStatus.textContent = formatPipelineStatus(meta.pipeline_status, meta.api_status);
   }
   if (els.heroDistrictCount) {
     els.heroDistrictCount.textContent = String((meta.districts || []).length || "-");
