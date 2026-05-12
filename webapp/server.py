@@ -3,11 +3,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from functools import lru_cache
 from io import StringIO
+import base64
 import json
 import os
 from pathlib import Path
 import re
 from typing import Any
+from urllib import parse as urlparse
 from urllib import request as urlrequest
 from urllib.error import URLError, HTTPError
 
@@ -284,6 +286,71 @@ def try_send_via_webhook(payload: dict[str, Any]) -> tuple[bool, str]:
         return False, f"webhook_error: {e}"
     except Exception as e:
         return False, f"webhook_unexpected: {e}"
+
+
+def _twilio_configured() -> bool:
+    return bool(
+        os.getenv("TWILIO_ACCOUNT_SID", "").strip()
+        and os.getenv("TWILIO_AUTH_TOKEN", "").strip()
+        and os.getenv("TWILIO_FROM_NUMBER", "").strip()
+    )
+
+
+def try_send_via_twilio(payload: dict[str, Any]) -> tuple[bool, str]:
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID", "").strip()
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN", "").strip()
+    from_sms = os.getenv("TWILIO_FROM_NUMBER", "").strip()
+    from_whatsapp = os.getenv("TWILIO_WHATSAPP_FROM", "").strip()
+
+    if not (account_sid and auth_token and from_sms):
+        return False, "twilio_not_configured"
+
+    contacts = payload.get("contacts", []) or []
+    msg = str(payload.get("message", "")).strip()
+    if not contacts:
+        return False, "twilio_no_contacts"
+    if not msg:
+        return False, "twilio_empty_message"
+
+    api_url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
+    auth_b64 = base64.b64encode(f"{account_sid}:{auth_token}".encode("utf-8")).decode("ascii")
+    headers = {
+        "Authorization": f"Basic {auth_b64}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+
+    sent_count = 0
+    fail_count = 0
+    for c in contacts:
+        channel = str(c.get("channel", "sms")).strip().lower()
+        to_raw = str(c.get("phone", "")).strip()
+        if not to_raw:
+            continue
+
+        from_num = from_sms
+        to_num = to_raw
+        if channel == "whatsapp":
+            if not from_whatsapp:
+                fail_count += 1
+                continue
+            from_num = from_whatsapp if from_whatsapp.startswith("whatsapp:") else f"whatsapp:{from_whatsapp}"
+            to_num = to_raw if to_raw.startswith("whatsapp:") else f"whatsapp:{to_raw}"
+
+        body = urlparse.urlencode({"To": to_num, "From": from_num, "Body": msg}).encode("utf-8")
+        req = urlrequest.Request(api_url, data=body, headers=headers, method="POST")
+        try:
+            with urlrequest.urlopen(req, timeout=15) as resp:
+                code = int(getattr(resp, "status", 200))
+                if 200 <= code < 300:
+                    sent_count += 1
+                else:
+                    fail_count += 1
+        except Exception:
+            fail_count += 1
+
+    if sent_count > 0:
+        return True, f"twilio_sent_{sent_count}_failed_{fail_count}"
+    return False, f"twilio_sent_0_failed_{fail_count}"
 
 
 @app.route("/")
@@ -658,6 +725,19 @@ def api_notify_send():
                 "message_preview": msg,
             }
         )
+
+    if _twilio_configured():
+        sent, detail = try_send_via_twilio(payload)
+        if sent:
+            return jsonify(
+                {
+                    "ok": True,
+                    "mode": "live",
+                    "provider": "twilio",
+                    "contacts_count": len(contacts),
+                    "detail": detail,
+                }
+            )
 
     sent, detail = try_send_via_webhook(payload)
     if sent:
