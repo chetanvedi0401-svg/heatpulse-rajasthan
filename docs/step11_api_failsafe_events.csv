@@ -1,2 +1,3 @@
 run_time,failsafe_state,latest_api_status,recent_api_statuses,window_runs,consecutive_non_live_detected
 2026-05-03 17:23:43,ALERT,stale_fallback,stale_fallback|stale_fallback,2,True
+2026-05-12 06:58:27,OK,success,stale_fallback|success,2,False
