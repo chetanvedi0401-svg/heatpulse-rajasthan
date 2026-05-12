@@ -33,6 +33,7 @@ ACTION_MAP = {
 }
 
 API_REQUIRED_COLS = ["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]
+API_OPTIONAL_COLS = ["sunrise", "sunset", "sunrise_local", "sunset_local"]
 
 
 def write_csv_resilient(df, target_file, index=False, retries=5, base_wait_sec=1.0):
@@ -488,8 +489,15 @@ def build_api_live_guarded_alerts(api_file, model_obj, model_features, best_thr,
     for df_ in [api_df, hist_df]:
         df_["district"] = normalize_district(df_["district"])
 
-    api_df = api_df[["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]].copy()
-    hist_df = hist_df[["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]].copy()
+    for c in API_OPTIONAL_COLS:
+        if c not in api_df.columns:
+            api_df[c] = ""
+        if c not in hist_df.columns:
+            hist_df[c] = ""
+
+    base_cols = ["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c"]
+    api_df = api_df[base_cols + API_OPTIONAL_COLS].copy()
+    hist_df = hist_df[base_cols + API_OPTIONAL_COLS].copy()
 
     hist_tmp = hist_df.copy()
     hist_tmp["month"] = hist_tmp["date"].dt.month
@@ -539,7 +547,7 @@ def build_api_live_guarded_alerts(api_file, model_obj, model_features, best_thr,
     live_pred = (live_prob >= best_thr).astype(int)
 
     live_out = live_df[
-        ["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c", "heat_stress_score"]
+        ["date", "district", "rain_mm", "tmax_c", "tmin_c", "tavg_c", "heat_stress_score", "sunrise", "sunset", "sunrise_local", "sunset_local"]
     ].copy()
     live_out["pred_prob_critical_t1"] = live_prob
     live_out["pred_prob_heatwave_t1"] = live_prob
