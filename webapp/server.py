@@ -255,13 +255,24 @@ def compose_alert_message(day: pd.DataFrame, date_s: str, district: str = "") ->
     if day.empty:
         return f"HeatWatch Rajasthan ({date_s}): no alert rows available."
 
-    top = day.sort_values("risk_score_next_day", ascending=False).head(5)
-    lines = []
-    for _, r in top.iterrows():
-        lines.append(f"{r['district']} {r['alert_level_next_day']} ({float(r['risk_score_next_day']):.1f})")
+    top = day.sort_values("risk_score_next_day", ascending=False).head(1)
+    row = top.iloc[0]
+    district_name = str(row.get("district", district or "District"))
+    alert = str(row.get("alert_level_next_day", "NA"))
+    risk = float(row.get("risk_score_next_day", 0))
+    tmax = float(row.get("tmax_c", 0))
+    tmin = float(row.get("tmin_c", 0))
+
+    sunrise = str(row.get("sunrise_local", row.get("sunrise", "NA"))).strip() or "NA"
+    sunset = str(row.get("sunset_local", row.get("sunset", "NA"))).strip() or "NA"
+
     return (
-        f"HeatWatch Rajasthan Alert ({date_s})\n"
-        f"Top risk districts: {' | '.join(lines)}\n"
+        f"HeatWatch Rajasthan | Daily Heat Advisory ({date_s})\n"
+        f"District: {district_name}\n"
+        f"Alert Level: {alert} | Risk Score: {risk:.1f}\n"
+        f"Tmax: {tmax:.1f} C | Tmin: {tmin:.1f} C\n"
+        f"Sunrise: {sunrise} | Sunset: {sunset}\n"
+        "No meaningful rainfall support is expected, so cooling relief is limited.\n"
         "Action: Follow district heat-health advisory and avoid peak afternoon exposure."
     )
 
