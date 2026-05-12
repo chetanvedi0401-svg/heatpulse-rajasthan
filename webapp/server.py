@@ -319,8 +319,22 @@ def try_send_via_twilio(payload: dict[str, Any]) -> tuple[bool, str]:
         "Content-Type": "application/x-www-form-urlencoded",
     }
 
+    def _normalize_phone_for_twilio(raw_phone: str) -> str:
+        p = str(raw_phone or "").strip()
+        if not p:
+            return ""
+        p = re.sub(r"[^\d+]", "", p)
+        if p.startswith("00"):
+            p = "+" + p[2:]
+        if not p.startswith("+"):
+            digits = re.sub(r"\D", "", p)
+            if digits:
+                p = f"+{digits}"
+        return p
+
     sent_count = 0
     fail_count = 0
+    first_error = ""
     for c in contacts:
         channel = str(c.get("channel", "sms")).strip().lower()
         to_raw = str(c.get("phone", "")).strip()
@@ -328,13 +342,21 @@ def try_send_via_twilio(payload: dict[str, Any]) -> tuple[bool, str]:
             continue
 
         from_num = from_sms
-        to_num = to_raw
+        to_num = _normalize_phone_for_twilio(to_raw)
         if channel == "whatsapp":
             if not from_whatsapp:
                 fail_count += 1
+                if not first_error:
+                    first_error = "missing_whatsapp_from_number"
                 continue
             from_num = from_whatsapp if from_whatsapp.startswith("whatsapp:") else f"whatsapp:{from_whatsapp}"
-            to_num = to_raw if to_raw.startswith("whatsapp:") else f"whatsapp:{to_raw}"
+            to_num = f"whatsapp:{to_num}"
+
+        if not to_num or not to_num.startswith("+") and not to_num.startswith("whatsapp:+"):
+            fail_count += 1
+            if not first_error:
+                first_error = f"invalid_to_format:{to_raw}"
+            continue
 
         body = urlparse.urlencode({"To": to_num, "From": from_num, "Body": msg}).encode("utf-8")
         req = urlrequest.Request(api_url, data=body, headers=headers, method="POST")
@@ -345,12 +367,25 @@ def try_send_via_twilio(payload: dict[str, Any]) -> tuple[bool, str]:
                     sent_count += 1
                 else:
                     fail_count += 1
-        except Exception:
+                    if not first_error:
+                        first_error = f"http_status_{code}"
+        except HTTPError as e:
             fail_count += 1
+            if not first_error:
+                try:
+                    err_body = e.read().decode("utf-8", errors="ignore")
+                except Exception:
+                    err_body = str(e)
+                first_error = f"http_error_{getattr(e, 'code', 'x')}:{err_body[:220]}"
+        except Exception as e:
+            fail_count += 1
+            if not first_error:
+                first_error = f"exception:{e}"
 
     if sent_count > 0:
         return True, f"twilio_sent_{sent_count}_failed_{fail_count}"
-    return False, f"twilio_sent_0_failed_{fail_count}"
+    suffix = f";{first_error}" if first_error else ""
+    return False, f"twilio_sent_0_failed_{fail_count}{suffix}"
 
 
 @app.route("/")
