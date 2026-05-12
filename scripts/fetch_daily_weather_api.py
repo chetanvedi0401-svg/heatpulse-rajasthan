@@ -53,7 +53,19 @@ def _rows_from_daily_payload(district, data):
     tmax = daily.get("temperature_2m_max", [])
     tmin = daily.get("temperature_2m_min", [])
     rain = daily.get("precipitation_sum", [])
-    for d, tx, tn, rn in zip(dates, tmax, tmin, rain):
+    sunrise = daily.get("sunrise", [])
+    sunset = daily.get("sunset", [])
+    for d, tx, tn, rn, sr, ss in zip(dates, tmax, tmin, rain, sunrise, sunset):
+        sr_label = ""
+        ss_label = ""
+        try:
+            sr_label = pd.to_datetime(sr).strftime("%I:%M %p")
+        except Exception:
+            sr_label = ""
+        try:
+            ss_label = pd.to_datetime(ss).strftime("%I:%M %p")
+        except Exception:
+            ss_label = ""
         rows.append(
             {
                 "date": d,
@@ -61,6 +73,10 @@ def _rows_from_daily_payload(district, data):
                 "rain_mm": rn,
                 "tmax_c": tx,
                 "tmin_c": tn,
+                "sunrise": sr,
+                "sunset": ss,
+                "sunrise_local": sr_label,
+                "sunset_local": ss_label,
             }
         )
     return rows
@@ -75,7 +91,7 @@ def _fetch_batch(session):
     params = {
         "latitude": lats,
         "longitude": lons,
-        "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
+        "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset",
         "timezone": timezone,
         "forecast_days": 2,
     }
@@ -106,7 +122,7 @@ def _fetch_per_district(session):
         params = {
             "latitude": lat,
             "longitude": lon,
-            "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
+            "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset",
             "timezone": timezone,
             "forecast_days": 2,
         }
