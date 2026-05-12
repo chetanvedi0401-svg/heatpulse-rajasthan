@@ -1,0 +1,7 @@
+key,value
+provider,open-meteo
+base_url,https://api.open-meteo.com/v1/forecast
+timezone,Asia/Kolkata
+days_ahead,1
+retry_count,3
+retry_backoff_sec,2
