@@ -738,6 +738,16 @@ def api_notify_send():
                     "detail": detail,
                 }
             )
+        return jsonify(
+            {
+                "ok": False,
+                "mode": "live",
+                "provider": "twilio",
+                "contacts_count": len(contacts),
+                "detail": detail,
+                "message_preview": msg,
+            }
+        ), 502
 
     sent, detail = try_send_via_webhook(payload)
     if sent:
