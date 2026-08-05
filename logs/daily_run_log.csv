@@ -7588,3 +7588,16 @@ Shape: (46, 10)
 
 [5 rows x 10 columns]
 ",/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/outputs/api_daily_top10_guarded.csv,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step10_data_reliability_report.csv,legacy_v1,baseline_logistic_step4
+2026-08-05 18:22:14,success,75555,2025-12-30,0.85,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/outputs/daily_alerts_auto.csv,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/outputs/daily_top10_auto.csv,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/outputs/latest_day_top10_auto.csv,success,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260805.csv,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/outputs/api_forecast_alerts_step9_guarded.csv,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/outputs/api_latest_top10_guarded.csv,"quality_mode=live_valid; selected_file=/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260805.csv
+Batch API fetch rows: 46
+Saved API daily weather file: /home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/data/raw/api_daily_weather_20260805.csv
+Shape: (46, 10)
+         date  district  rain_mm  ...  sunrise_local  sunset_local tavg_c
+0  2026-08-05     Ajmer      6.8  ...       05:58 AM      07:16 PM  27.40
+1  2026-08-06     Ajmer      0.0  ...       05:59 AM      07:15 PM  28.00
+2  2026-08-05     Alwar      7.3  ...       05:49 AM      07:10 PM  29.55
+3  2026-08-06     Alwar     13.4  ...       05:49 AM      07:09 PM  27.65
+4  2026-08-05  Banswara      2.1  ...       06:03 AM      07:12 PM  27.80
+
+[5 rows x 10 columns]
+",/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/outputs/api_daily_top10_guarded.csv,/home/runner/work/heatpulse-rajasthan/heatpulse-rajasthan/docs/step10_data_reliability_report.csv,legacy_v1,baseline_logistic_step4
