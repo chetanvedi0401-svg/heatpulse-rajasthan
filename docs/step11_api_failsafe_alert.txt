@@ -1,3 +1,3 @@
-API FAILSAFE STATUS OK (2026-09-02 13:19:05)
-Condition: Latest run has live API success.
-Action: No intervention needed.
+API FAILSAFE WATCH (2026-09-02 19:38:21)
+Condition: Latest status is stale_fallback. Waiting for confirmation over 2 runs.
+Action: Monitor next scheduled run.
